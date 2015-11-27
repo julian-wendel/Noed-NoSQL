@@ -1,0 +1,26 @@
+<div class="toolbar" layout-margin layout="row" layout-align="center center">
+    <md-whiteframe flex-gt-md="45" flex="100"  layout-align="center center" layout="row" class="md-whiteframe-3dp">
+        <div flex="90">
+            <input placeholder="Add Note" class="toolbarInput" type="text">
+        </div>
+        <div flex="10">
+            <md-button class="md-icon-button md-primary" aria-label="Settings">
+                <md-icon md-font-set="material-icons" aria-label="Home">reorder</md-icon>
+            </md-button>
+         </div>
+    </md-whiteframe>
+</div>
+
+<div ng-controller="LoginCtrl as appCtrl" ng-cloak class="gridListdemoBasicUsage">
+    <md-grid-list
+            md-cols-sm="1" md-cols-md="2" md-cols-gt-md="5"
+            md-row-height-gt-md="1:1" md-row-height="2:2"
+            md-gutter="12px" md-gutter-gt-sm="8px" >
+        <md-grid-tile ng-repeat="task in tasks" ng-class="task.color" class="md-whiteframe-5dp"
+                      md-rowspan="1" md-colspan="1" md-colspan-sm="1">
+            <md-grid-tile-footer>
+                <h3>{{task.name}}</h3>
+            </md-grid-tile-footer>
+        </md-grid-tile>
+    </md-grid-list>
+</div>
