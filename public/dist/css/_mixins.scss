@@ -1,0 +1,102 @@
+@mixin border-radius ($radius) {
+  -webkit-border-radius: $radius;
+  -moz-border-radius: $radius;
+  -o-border-radius: $radius;
+  border-radius: $radius;
+}
+
+// Single Corner Border Radius
+@mixin border-top-left-radius($radius) {
+  -webkit-border-top-left-radius: $radius;
+  -moz-border-radius-topleft: $radius;
+  border-top-left-radius: $radius;
+}
+@mixin border-top-right-radius($radius) {
+  -webkit-border-top-right-radius: $radius;
+  -moz-border-radius-topright: $radius;
+  border-top-right-radius: $radius;
+}
+@mixin border-bottom-right-radius($radius) {
+  -webkit-border-bottom-right-radius: $radius;
+  -moz-border-radius-bottomright: $radius;
+  border-bottom-right-radius: $radius;
+}
+@mixin border-bottom-left-radius($radius) {
+  -webkit-border-bottom-left-radius: $radius;
+  -moz-border-radius-bottomleft: $radius;
+  border-bottom-left-radius: $radius;
+}
+
+// Single Side Border Radius
+@mixin border-top-radius($radius) {
+  @include border-top-right-radius($radius);
+  @include border-top-left-radius($radius);
+}
+@mixin border-right-radius($radius) {
+  @include border-top-right-radius($radius);
+  @include border-bottom-right-radius($radius);
+}
+@mixin border-bottom-radius($radius) {
+  @include border-bottom-right-radius($radius);
+  @include border-bottom-left-radius($radius);
+}
+@mixin border-left-radius($radius) {
+  @include border-top-left-radius($radius);
+  @include border-bottom-left-radius($radius);
+}
+
+// Appearance
+// --------------------------------------------------
+
+@mixin appearance($val) {
+  -webkit-appearance: $val;
+  -moz-appearance: $val;
+  appearance: $val;
+}
+
+// Box shadows
+// --------------------------------------------------
+
+@mixin box-shadow($shadow...) {
+  -webkit-box-shadow: $shadow;
+  -moz-box-shadow: $shadow;
+  box-shadow: $shadow;
+}
+
+// Transition
+// --------------------------------------------------
+
+@mixin transition($what, $duration, $easing:linear) {
+  -webkit-transition: $what $duration $easing;
+  -moz-transition: $what $duration $easing;
+  -o-transition: $what $duration $easing;
+  transition: $what $duration $easing;
+}
+
+@mixin animation($what, $duration, $timeFunc) {
+  -webkit-animation: $what $duration $timeFunc;
+  -moz-animation: $what $duration $timeFunc;
+  -o-animation: $what $duration $timeFunc;
+  animation: $what $duration $timeFunc;
+}
+
+@mixin transform($params) {
+  -webkit-transform: $params;
+  -moz-transform: $params;
+  -o-transform: $params;
+  transform: $params;
+}
+
+@mixin transparency($value, $perc) {
+  -moz-opacity: $value;
+  opacity: $value;
+  filter: alpha(opacity=$perc);
+  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=" + $perc + ")";
+}
+
+@mixin circle($radius) {
+  min-width: $radius;
+  max-width: $radius;
+  min-height: $radius;
+  max-height: $radius;
+}

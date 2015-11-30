@@ -1,0 +1,52 @@
+@import "animate.css";
+@import "variables";
+@import "mixins";
+
+// ----------- color list
+// -----------------------------
+
+$colorList: (
+	'black': $black,
+	'blue': $blue,
+	'gray': $gray,
+	'green': $green,
+	'red': $red,
+	'white': $white,
+	'yellow': $yellow,
+);
+
+@each $key in $colorList {
+  $name: nth($key, 1);
+  $color: nth($key, 2);
+  .#{$name} {
+	color: $color;
+	&-text { color: $color; }
+	&-border { border-color: $color; }
+	&-background { background-color: $color; }
+  }
+}
+
+.gridListdemoBasicUsage {
+  md-grid-list { margin: 8px; }
+  md-grid-tile { @include transition(all, 400ms, ease-out); }
+}
+
+
+.noedSQL .toolbar{
+  margin-top: 2em;
+  margin-bottom: 2em;
+
+}
+
+.toolbarInput {
+  font-size: 14px;
+  box-sizing: border-box;
+  border: none;
+  @include box-shadow(none);
+  outline: 0;
+  background: 0 0;
+  width: 100%;
+  padding: 0 15px;
+  line-height: 40px;
+  height: 40px;
+}
