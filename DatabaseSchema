@@ -1,0 +1,24 @@
+//List
+{
+  _id:auto,
+  name:String
+  owner:userId,
+  public:bool
+}
+
+//Task
+{
+  _id:auto,
+  list:listID,
+  name:String,
+  done:bool
+}
+
+//User
+{
+  _id:auto,
+  userName:String,
+  name:String,
+  prename:String,
+  password:String
+}
