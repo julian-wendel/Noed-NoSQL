@@ -18,6 +18,7 @@
 {
   _id:auto,
   userName:String,
+  role: String,
   name:String,
   prename:String,
   password:String

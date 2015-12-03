@@ -9,6 +9,8 @@ var routes = require('./routes/index');
 var users = require('./routes/users');
 var token = require('./routes/token');
 
+var restrict = require('./middleware/restrict');
+
 var app = express();
 
 // view engine setup
@@ -24,7 +26,10 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', routes);
+
+app.use('/users', restrict.to(['ADMIN']));
 app.use('/users', users);
+
 app.use('/api/token', token);
 
 // catch 404 and forward to error handler

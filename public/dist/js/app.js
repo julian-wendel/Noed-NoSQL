@@ -23,12 +23,40 @@ app.config(function($stateProvider, $urlRouterProvider) {
         });
 });
 
-app.controller('LoginCtrl', function($scope, $state) {
+app.factory('LoginSrv', ['$q','$http', function($q, $http){
+    return {
+        setAuthHeader: function(token){
+            $http.defaults.headers.common['X-Auth'] = token;
+        },
+
+        login: function(data){
+            var $d = $q.defer();
+            $http({
+                method: 'POST',
+                url: './api/token',
+                data: data
+            }).then(function(response) {
+                $d.resolve(response);
+            }, function(error) {
+                $d.reject(error.message);
+            });
+            return $d.promise;
+        }
+    }
+}]);
+
+app.controller('LoginCtrl', function($scope, $state, $http, LoginSrv) {
     $scope.username;
     $scope.password;
 
     $scope.login = function(){
-        console.log('hey');
+        /*LoginSrv.login({username: $scope.username, password: $scope.password}).then(function(res){
+            LoginSrv.setAuthHeader(res.data.token);
+            $state.go('tasks');
+        }, function(err){
+            //TODO respond to user
+        });*/
+        
         $state.go('tasks');
     }
 });
