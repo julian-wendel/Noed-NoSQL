@@ -5,52 +5,56 @@
 var express = require('express');
 var jwt = require('jsonwebtoken');
 var bcrypt = require('bcryptjs');
-var async = require('async');
+var Promise = require('bluebird');
 var mongodb = require('mongodb').MongoClient;
 var router = express.Router();
 
 var conStr = "mongodb://127.0.0.1:27017/nosql";
 var privateKey = "Pass1234_";
 
-function connectToDB(req, callback){
-    mongodb.connect(conStr, function connectToDB(err, db) {
-        if (err) {
-            console.log(err);
-           return callback({status: 500, message: 'Could not connect to DB.'});
-        }
-
-        callback(null, req, db);
+function connectToDB(req){
+    return new Promise(function(resolve, reject) {
+        mongodb.connect(conStr, function connectToDB(err, db) {
+            if (err)
+                reject({status: 500, err: err});
+            else
+                resolve({req: req, db: db});
+        });
     });
 }
 
-function findUser(req, db, callback){
-    db.collection('users').find({username: req.body.username}).toArray(function getUser(err, users) {
-        if (err){
-            console.log(err);
-            db.close();
-            return callback({status: 500, message: 'Could not find User'});
-        }
+function findUser(args){
+    return new Promise(function(resolve, reject){
+        args.db.collection('users').find({username: args.req.body.username}).toArray(function getUser(err, users) {
+            if (err)
+                reject({status: 400, err: err});
+            else
+                resolve({req: args.req, users: users});
 
-        console.log(users);
-        db.close();
-        callback(null, req, users);
+        });
     });
 }
 
-function comparePassword(req, users, callback){
-    bcrypt.compare(req.body.password, users[0].password, function comparePassword(err, result){
-        if(err || !result){
-            callback({status: 405, message: 'Passwords are not equal.'});
-        }
-
-        callback(null, users[0]);
+function comparePassword(args){
+    return new Promise(function(resolve, reject) {
+        bcrypt.compare(args.req.body.password, args.users[0].password, function comparePassword(err, result) {
+            if (err || !result)
+                reject({status: 400, err: err});
+            else
+                resolve({user: args.users[0]});
+        });
     });
 }
 
-function createToken(user, callback){
-    console.log(user);
-    jwt.sign({id: user._id, username: user.username, role: user.role}, privateKey, { expiresIn: "1h"}, function createToken(token){
-        callback(null, token);
+function createToken(args){
+    return new Promise(function (resolve, reject) {
+        jwt.sign({
+            id: args.user._id,
+            username: args.user.username,
+            role: args.user.role
+        }, privateKey, {expiresIn: "1h"}, function createToken(token) {
+            resolve(token);
+        });
     });
 }
 
@@ -62,17 +66,18 @@ router.post('/', function(req, res) {
         return;
     }
 
-    async.waterfall([
-        connectToDB.bind(this, req),
-        findUser,
-        comparePassword,
-        createToken
-    ], function(err, token){
-        if(err)
-            return res.sendStatus(err.status);
-
-        res.json({token: token});
-    });
+    connectToDB(req)
+        .then(findUser)
+        .then(comparePassword)
+        .then(createToken)
+        .then(function(token){
+            console.log(token);
+            res.json({token: token});
+        })
+        .catch(function(error){
+            console.log(error.err);
+            res.sendStatus(error.status);
+        });
 });
 
 module.exports = router;

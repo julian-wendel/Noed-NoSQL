@@ -27,8 +27,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', routes);
 
-app.use('/users', restrict.to(['ADMIN']));
-app.use('/users', users);
+app.use('/api/users', restrict.to(['ADMIN']));
+app.use('/api/users', users);
 
 app.use('/api/token', token);
 
