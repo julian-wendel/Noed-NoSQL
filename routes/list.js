@@ -8,9 +8,30 @@ var conStr = "mongodb://127.0.0.1:27017/nosql";
 
 router.get('/', function(req, res, next) {
     if (req.query) {
-        return getLists(req.query);
+        var tasks = null;
+        database.connect(conStr, function(err, db) {
+            if(!err) {
+                console.log("We are connected");
+                db.collection("lists").find(req.query).toArray(function(err, result)
+                {
+                    if(err){
+                        console.log(err);
+                        db.close();
+                        res.sendStatus(405);
+                    }
+                    else{
+                        db.close();
+                        res.send(result);
+                    }
+                });
+            }
+            else{
+                console.log(err);
+            }
+        });
     }
-    return null;
+    else
+        res.sendStatus(404);
 });
 
 router.post('/', function(req, res, next) {
@@ -33,7 +54,8 @@ function getLists(owner){
             {
                 if(err){
                     console.log(err);
-                    res.sendStatus(405);
+                    db.close();
+                    return sendStatus(405);
                 }
                 else{
                     db.close();
