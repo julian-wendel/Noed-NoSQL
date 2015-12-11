@@ -50,7 +50,7 @@
 
 			$http({
 				method: 'GET',
-				url: '/api/tasks?userId=' + userId
+				url: '/api/tasks?owner=' + userId
 			}).then(function(res, status) {
 				if (status === 200)
 					deferred.resolve(res);

@@ -8,8 +8,7 @@ var conStr = "mongodb://127.0.0.1:27017/nosql";
 
 router.get('/', function(req, res, next) {
     if (req.query) {
-        var userId = req.query.userId;
-        return getLists(userId);
+        return getLists(req.query);
     }
     return null;
 });
@@ -26,11 +25,11 @@ router.delete('/', function(req, res, next) {
 
 });
 
-function getLists(userId){
+function getLists(owner){
     database.connect(conStr, function(err, db) {
         if(!err) {
             console.log("We are connected");
-            db.collection("lists").find(userId).toArray(function(err, result)
+            db.collection("lists").find(owner).toArray(function(err, result)
             {
                 if(err){
                     console.log(err);
