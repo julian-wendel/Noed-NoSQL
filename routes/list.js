@@ -1,8 +1,39 @@
 /**
  * Created by Julian on 30.11.2015.
  */
+var express = require('express');
+var router = express.Router();
 var database = require('mongodb').MongoClient;
-var conStr = "mongodb://192.168.79.128:27017/nosql";
+var conStr = "mongodb://127.0.0.1:27017/nosql";
+
+router.get('/', function(req, res, next) {
+    if (req.query) {
+        var userId = req.query.id;
+        var tasklists = getLists(userId);
+        var today = false;
+        for (list in tasklists) {
+            $scope.tasks.push({name: tasklists[list].name, color: $scope.colors[i % $scope.colors.length]})
+            if (tasklists[list].name.eq(getCurrentDate()))
+                today = true;
+        }
+        if (!today) {
+            insertList(userId, getCurrentDate(), false);
+            $scope.tasks.push({name: getCurrentDate(), color: $scope.colors[2]})
+        }
+    }
+});
+
+router.post('/', function(req, res, next) {
+
+});
+
+//router.update('/', function(req, res, next) {
+//
+//});
+
+router.delete('/', function(req, res, next) {
+
+});
 
 function getLists(userId){
     database.connect(conStr, function(err, db) {
@@ -96,3 +127,5 @@ function deleteTask(listId){
         }
     });
 }
+
+module.exports = router;

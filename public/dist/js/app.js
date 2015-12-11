@@ -64,8 +64,7 @@ app.controller('LoginCtrl', function($scope, $state, $http, LoginSrv) {
 app.controller('TasksCtrl', function($scope) {
     $scope.tasks = new Array();
     $scope.colors = ['yellow', 'green', 'red', 'gray', 'purple', 'blue'];
-
-    for(var i=0; i<10; i++){
-        $scope.tasks.push({name: 'List ' + i, color: $scope.colors[i % $scope.colors.length]});
-    }
+    //for(var i=0; i<10; i++){
+    //    $scope.tasks.push({name: 'List ' + i, color: $scope.colors[i % $scope.colors.length]});
+    //}
 });
