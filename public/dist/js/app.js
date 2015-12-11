@@ -4,12 +4,19 @@
 
 var app = angular.module('NoedSQL', ['ngMaterial', 'ngMessages', 'ui.router']);
 
+app.run(function($rootScope, $state) {
+	/**
+	 * Redirects to the specified state.
+	 * @param {string} to Absolute state name or relative state path.
+	 * @param {object=} params A map of the parameters that will be sent to the state.
+	 * @param {object=} options Options object.
+	 */
+	$rootScope.navigateTo = function(to, params, options) {
+		$state.go(to, params, options);
+	};
+});
+
 app.config(function($stateProvider, $urlRouterProvider) {
-    //
-    // For any unmatched url, redirect to /state1
-    $urlRouterProvider.otherwise("/login");
-    //
-    // Now set up the states
     $stateProvider
         .state('login', {
             url: "/login",
@@ -18,53 +25,15 @@ app.config(function($stateProvider, $urlRouterProvider) {
         })
         .state('tasks', {
             url: "/tasks",
+            params: ':userId',
             templateUrl: "views/tasks.html",
+            resolve: {
+                Tasks: function(TaskServices, $stateParams) {
+                    return TaskServices.all($stateParams.userId);
+                }
+            },
             controller: 'TasksCtrl'
         });
-});
 
-app.factory('LoginSrv', ['$q','$http', function($q, $http){
-    return {
-        setAuthHeader: function(token){
-            $http.defaults.headers.common['X-Auth'] = token;
-        },
-
-        login: function(data){
-            var $d = $q.defer();
-            $http({
-                method: 'POST',
-                url: './api/token',
-                data: data
-            }).then(function(response) {
-                $d.resolve(response);
-            }, function(error) {
-                $d.reject(error.message);
-            });
-            return $d.promise;
-        }
-    }
-}]);
-
-app.controller('LoginCtrl', function($scope, $state, $http, LoginSrv) {
-    $scope.username;
-    $scope.password;
-
-    $scope.login = function(){
-        /*LoginSrv.login({username: $scope.username, password: $scope.password}).then(function(res){
-            LoginSrv.setAuthHeader(res.data.token);
-            $state.go('tasks');
-        }, function(err){
-            //TODO respond to user
-        });*/
-        
-        $state.go('tasks');
-    }
-});
-
-app.controller('TasksCtrl', function($scope) {
-    $scope.tasks = new Array();
-    $scope.colors = ['yellow', 'green', 'red', 'gray', 'purple', 'blue'];
-    //for(var i=0; i<10; i++){
-    //    $scope.tasks.push({name: 'List ' + i, color: $scope.colors[i % $scope.colors.length]});
-    //}
+	$urlRouterProvider.otherwise("/login");
 });

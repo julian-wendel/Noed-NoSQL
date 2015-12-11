@@ -8,28 +8,19 @@ var conStr = "mongodb://127.0.0.1:27017/nosql";
 
 router.get('/', function(req, res, next) {
     if (req.query) {
-        var userId = req.query.id;
-        var tasklists = getLists(userId);
-        var today = false;
-        for (list in tasklists) {
-            $scope.tasks.push({name: tasklists[list].name, color: $scope.colors[i % $scope.colors.length]})
-            if (tasklists[list].name.eq(getCurrentDate()))
-                today = true;
-        }
-        if (!today) {
-            insertList(userId, getCurrentDate(), false);
-            $scope.tasks.push({name: getCurrentDate(), color: $scope.colors[2]})
-        }
+        var userId = req.query.userId;
+        return getLists(userId);
     }
+    return null;
 });
 
 router.post('/', function(req, res, next) {
 
 });
 
-//router.update('/', function(req, res, next) {
-//
-//});
+router.put('/:id', function(req, res, next) {
+
+});
 
 router.delete('/', function(req, res, next) {
 

@@ -5,7 +5,7 @@
                 <form name="loginForm" layout-padding>
                     <md-input-container class="md-block">
                         <label>Username</label>
-                        <input required type="text" name="username" ng-model="username">
+                        <input required type="text" name="username" ng-model="user.username">
                         <div ng-if="loginForm.username.$touched" ng-messages="loginForm.username.$error">
                             <div ng-message="required">This is required.</div>
                         </div>
@@ -13,14 +13,14 @@
 
                     <md-input-container class="md-block">
                         <label>Password</label>
-                        <input required type="password" name="password" ng-model="password">
+                        <input required type="password" name="password" ng-model="user.password">
                         <div ng-if="loginForm.password.$touched" ng-messages="loginForm.password.$error">
                             <div ng-message="required">This is required.</div>
                         </div>
                     </md-input-container>
 
                     <md-input-container>
-                        <md-button ng-click="login()" class="md-raised md-primary md-block">Login</md-button>
+                        <md-button ng-click="login(user)" class="md-raised md-primary md-block">Login</md-button>
                     </md-input-container>
                 </form>
             </md-whiteframe>
