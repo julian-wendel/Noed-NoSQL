@@ -35,14 +35,15 @@
 				method: 'POST',
 				url: '/api/tasks',
 				data: task
-			}).then(function(res, status) {
-				if (status === 201)
+			}).then(function(res) {
+				if (res.status === 201)
 					deferred.resolve();
 				else
-					deferred.reject(status);
+					deferred.reject(res.status);
 			}, function(error, status) {
 				deferred.reject(status);
-			})
+			});
+			return deferred.promise;
 		};
 
 		var all = function(userId) {
@@ -51,14 +52,15 @@
 			$http({
 				method: 'GET',
 				url: '/api/tasks?owner=' + userId
-			}).then(function(res, status) {
-				if (status === 200)
-					deferred.resolve(res);
+			}).then(function(res) {
+				if (res.status === 200)
+					deferred.resolve(res.data);
 				else
-					deferred.reject(status);
+					deferred.reject(res.status);
 			}, function(error, status) {
 				deferred.reject(status);
-			})
+			});
+			return deferred.promise;
 		};
 
 		var getAllPublicTasks = function() {
@@ -67,14 +69,16 @@
 			$http({
 				method: 'GET',
 				url: '/api/tasks'
-			}).then(function(res, status) {
-				if (status === 200)
-					deferred.resolve(res);
+			}).then(function(res) {
+				if (res.status === 200)
+					deferred.resolve(res.data);
 				else
-					deferred.reject(status);
+					deferred.reject(res.status);
 			}, function(error, status) {
 				deferred.reject(status);
-			})
+			});
+
+			return deferred.promise;
 		};
 
 		var getTaskById = function(id) {
@@ -83,14 +87,16 @@
 			$http({
 				method: 'GET',
 				url: '/api/tasks?id=' + id
-			}).then(function(res, status) {
-				if (status === 200)
-					deferred.resolve(res);
+			}).then(function(res) {
+				if (res.status === 200)
+					deferred.resolve(res.data);
 				else
-					deferred.reject(status);
+					deferred.reject(res.status);
 			}, function(error, status) {
 				deferred.reject(status);
-			})
+			});
+
+			return deferred.promise;
 		};
 
 		var update = function(task) {
@@ -99,14 +105,16 @@
 			$http({
 				method: 'PUT',
 				url: '/api/tasks?id=' + task.id
-			}).then(function(res, status) {
-				if (status === 201)
+			}).then(function(res) {
+				if (res.status === 201)
 					deferred.resolve();
 				else
-					deferred.reject(status);
+					deferred.reject(res.status);
 			}, function(error, status) {
 				deferred.reject(status);
-			})
+			});
+
+			return deferred.promise;
 		};
 
 		var remove = function(task) {
@@ -115,14 +123,15 @@
 			$http({
 				method: 'DELETE',
 				url: '/api/tasks?id=' + task.id
-			}).then(function(res, status) {
-				if (status === 200)
+			}).then(function(res) {
+				if (res.status === 200)
 					deferred.resolve();
 				else
-					deferred.reject(status);
+					deferred.reject(res.status);
 			}, function(error, status) {
 				deferred.reject(status);
-			})
+			});
+			return deferred.promise;
 		};
 
 		return {

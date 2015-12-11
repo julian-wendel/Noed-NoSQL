@@ -20,11 +20,12 @@
 
 	app.controller('TasksCtrl', function($scope, Tasks, TaskServices) {
 		$scope.tasks = Tasks;
-		/*var colors = ['yellow', 'green', 'red', 'gray', 'purple', 'blue'];
+		var colors = ['yellow', 'green', 'red', 'gray', 'purple', 'blue'];
+		var color = colors[~~(Math.random() * 10) % colors.length];
 
-		 for(var i=0; i<10; i++){
-		 $scope.tasks.push({name: 'List ' + i, color: colors[i % colors.length]});
-		 }*/
+		for (var i = 0; i < $scope.tasks.length; i++) {
+			angular.extend($scope.tasks[i], {color: color});
+		}
 
 		$scope.add = function(task) {
 			TaskServices.add(task).then(function() {
