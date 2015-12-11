@@ -13,7 +13,7 @@ router.get('/', function(req, res, next) {
         database.connect(conStr, function(err, db) {
             if(!err) {
                 console.log("We are connected");
-                db.collection("todos").find(req.query).toArray(function(err, result)
+                db.collection("tasks").find(req.query).toArray(function(err, result)
                 {
                     if(err){
                         console.log(err);
@@ -43,7 +43,7 @@ router.post('/', function(req, res, next) {
               console.log("We are connected");
               database.connect(conStr, function(err, db) {
                   if(!err) {
-                      db.collection('lists').insertOne( {
+                      db.collection('tasks').insertOne( {
                           "owner":req.param('owner'),
                           "name":req.param('name'),
                           "public": req.param('public')
@@ -76,7 +76,7 @@ router.put('/', function(req, res, next) {
         database.connect(conStr, function(err, db) {
             if(!err) {
                 console.log("We are connected");
-                db.collection('lists').updateOne(
+                db.collection('tasks').updateOne(
                     { "_id" : req.param('_id') },
                     {
                         $set: {
@@ -108,7 +108,7 @@ router.delete('/', function(req, res, next) {
             if(!err) {
                 console.log("We are connected");
                 deleteAllTasksInList(listId,db,callback);
-                db.collection('lists').deleteOne(
+                db.collection('tasks').deleteOne(
                     { "_id": req.param('_id') },
                     function(err, results) {
                         console.log(results);
