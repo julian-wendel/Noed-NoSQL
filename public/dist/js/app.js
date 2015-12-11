@@ -2,6 +2,8 @@
  * Created by nico on 24.11.15.
  */
 
+'use strict';
+
 var app = angular.module('NoedSQL', ['ngMaterial', 'ngMessages', 'ui.router']);
 
 app.run(function($rootScope, $state) {
@@ -25,7 +27,7 @@ app.config(function($stateProvider, $urlRouterProvider) {
         })
         .state('tasks', {
             url: "/tasks",
-            params: ':userId',
+            params: {userId: ':userId'},
             templateUrl: "views/tasks.html",
             resolve: {
                 Tasks: function(TaskServices, $stateParams) {
