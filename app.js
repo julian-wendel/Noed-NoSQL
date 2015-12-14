@@ -9,6 +9,7 @@ var routes = require('./routes/index');
 var users = require('./routes/users');
 var token = require('./routes/token');
 var tasks = require('./routes/tasks');
+var todos = require('./routes/todo');
 
 var restrict = require('./middleware/restrict');
 
@@ -28,6 +29,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', routes);
 app.use('/api/tasks', tasks);
+app.use('/api/todos', todos);
 app.use('/api/users', restrict.to(['ADMIN']));
 app.use('/api/users', users);
 

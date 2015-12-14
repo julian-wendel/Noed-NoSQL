@@ -2,14 +2,27 @@
 @import "variables";
 @import "mixins";
 
+body {
+  background-color: $lightgray;
+  -webkit-font-smoothing: antialiased;
+}
+
+* { outline: 0; }
+
 // ----------- color list
 // -----------------------------
 
 $colorList: (
+	'amber': $amber,
 	'black': $black,
 	'blue': $blue,
+	'darkgray': $darkgray,
 	'gray': $gray,
 	'green': $green,
+	'lightblue': $lightblue,
+	'lightgray': $lightgray,
+	'lightyellow': $lightyellow,
+	'purple': $purple,
 	'red': $red,
 	'white': $white,
 	'yellow': $yellow,
@@ -22,31 +35,83 @@ $colorList: (
 	color: $color;
 	&-text { color: $color; }
 	&-border { border-color: $color; }
-	&-background { background-color: $color; }
+	&-background { background-color: $color !important; }
   }
 }
 
-.gridListdemoBasicUsage {
-  md-grid-list { margin: 8px; }
-  md-grid-tile { @include transition(all, 400ms, ease-out); }
+.noed-sql .toolbar {
+  margin: 2em auto .8em;
+  width: 50%;
+  @include transition(width, .3s, ease-in);
+  @media screen and (max-width: 767px) {
+	width: 90%;
+  }
+  .input-holder {
+	background-color: $white;
+	//padding: 0 10px;
+	input {
+	  border: none;
+	  line-height: 40px;
+	  padding: 0 10px;
+	  width: 100%;
+	}
+  }
+  .color-picker {
+	font-size: 90%;
+	.md-button {
+	  min-height: 0;
+	  margin: 3px 5px 0;
+	  &.md-fab.md-mini {
+		line-height: 10px;
+		width: 20px;
+		height: 20px;
+		@include display-flex();
+		@include justify-content(center);
+		md-icon {
+		  font-size: 16px;
+		  width: auto;
+		  height: auto;
+		}
+	  }
+	}
+	md-fab-actions {
+	  .md-fab { background-color: transparent; }
+	}
+  }
 }
 
-
-.noedSQL .toolbar{
-  margin-top: 2em;
-  margin-bottom: 2em;
-
+md-content {
+  background-color: $lightgray;
 }
+md-grid-list {
+  margin: 8px;
 
-.toolbarInput {
-  font-size: 14px;
-  box-sizing: border-box;
-  border: none;
-  @include box-shadow(none);
-  outline: 0;
-  background: 0 0;
-  width: 100%;
-  padding: 0 15px;
-  line-height: 40px;
-  height: 40px;
+  md-grid-tile {
+	@include transition(all, 400ms, ease-out);
+	@include box-shadow(0 1px 5px rgba(0,0,0,.5));
+
+	figure { display: block; }
+
+	md-grid-tile-header {
+	  background: none;
+	  h3 {
+		color: $darkgray;
+		font-weight: 500;
+		margin: 0 16px;
+	  }
+	}
+
+	// task list items
+	md-list {
+	  margin-top: 40px;
+	  md-list-item {
+		min-height: 28px;
+		.md-list-item-inner {
+		  min-height: 28px;
+		  > md-checkbox:first-child { margin-right: 5px; }
+		  p { overflow: hidden; text-overflow: ellipsis; }
+		}
+	  }
+	}
+  }
 }

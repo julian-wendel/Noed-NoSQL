@@ -35,39 +35,30 @@ router.get('/', function(req, res, next) {
         res.sendStatus(400);
 });
 
-//insert item into database
-router.post('/', function(req, res, next) {
-  if(req.query && req.param('owner') && req.param('name') && req.param('public')){
-      database.connect(conStr, function(err, db) {
-          if(!err) {
-              console.log("We are connected");
-              database.connect(conStr, function(err, db) {
-                  if(!err) {
-                      db.collection('tasks').insertOne( {
-                          "owner":req.param('owner'),
-                          "name":req.param('name'),
-                          "public": req.param('public')
-                      }, function(err, result) {
-                          assert.equal(err, null);
-                          console.log("Task successfully added to List ");
-                          db.close();
-                          res.send(callback(result));
-                      });
-                  }
-                  else{
-                      console.log(err);
-                      db.close();
-                      res.sendStatus(500);
-                  }
-              });
-          }
-          else{
-              console.log(err);
-          }
-      });
-  }
-  else
-    res.sendStatus(400)
+//insert a todo task into database
+router.post('/', function (req, res, next) {
+	if (req.query && req.query.owner && req.query.name && req.query.public && req.query.color) {
+		database.connect(conStr, function (err, db) {
+			if (!err) {
+				// insert using a promise
+				db.collection('tasks').insertOne(req.query).then(function(result) {
+					console.log("Successfully added a task list to database.");
+					db.close();
+					// not returning anything, just send OK status
+					res.sendStatus(res.statusCode);
+				}, function(err) {
+					console.log('Error adding task list. Error: ' + err);
+					db.close();
+					res.sendStatus(404);
+				});
+			} else {
+				console.log('Error connecting to database. Reason: ' + err);
+				db.close();
+				res.sendStatus(500);
+			}
+		});
+	} else
+		res.sendStatus(400)
 });
 
 //update item in database

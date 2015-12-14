@@ -2,16 +2,16 @@ use nosql
 
 db.tasks.insert(
     [
-         {_id : 1, name: "Private Backlog", "owner": "1", "public": "false" },
-         {_id : 2, name: "Work Backlog", "owner": "1", "public": "false" },
-         {_id : 3, name: "Wasted Time", "owner": "1", "public": "true" }
+         {_id : 1, name: "Private Backlog", "owner": "1", "color": "green", "public": false },
+         {_id : 2, name: "Work Backlog", "owner": "1", "color": "white", "public": false },
+         {_id : 3, name: "Wasted Time", "owner": "1", "color": "blue", "public": true }
     ]
 )
 
 db.todos.insert(
     [
-        {name : "schlafen", "list": "1", "done": "false"},
-        {name : "write Dokument", "list": "2", "done": "false"},
-        {name : "NoSQL Vorlesung", "list": "3", "done": "false"}
+        {name : "schlafen", "list": "1", "done": false},
+        {name : "write Dokument", "list": "2", "done": false},
+        {name : "NoSQL Vorlesung", "list": "3", "done": false}
     ]
 )

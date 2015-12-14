@@ -9,25 +9,31 @@ var conStr = "mongodb://127.0.0.1:27017/nosql";
 //Get items from database
 router.get('/', function(req, res, next) {
     if (req.query) {
-        var tasks = null;
         database.connect(conStr, function(err, db) {
             if(!err) {
                 console.log("We are connected");
-                db.collection("todos").find(req.query).toArray(function(err, result)
-                {
-                    if(err){
-                        console.log(err);
-                        db.close();
-                        res.sendStatus(404);
-                    }
-                    else{
-                        db.close();
-                        res.send(result);
-                    }
-                });
-            }
-            else{
+				var docs = db.collection('todos').find(req.query);
+
+				if (docs !== null) {
+					docs.toArray(function(err, result) {
+						if (err) {
+							db.close();
+							res.sendStatus(404);
+						} else {
+							db.close();
+							res.send(result);
+						}
+					});
+				} else {
+					// no result returned from DB
+					db.close();
+					res.sendStatus(res.statusCode);
+				}
+            } else {
+				// error connecting to database
                 console.log(err);
+				res.sendStatus(500);
+				db.close();
             }
         });
     }

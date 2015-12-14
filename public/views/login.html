@@ -1,28 +1,25 @@
 <div layout="row" layout-fill layout-align="center center">
-    <div flex="33">
-            <md-whiteframe layout-padding layout="column" class="md-whiteframe-6dp">
+    <md-whiteframe flex="50" flex-sm="90" layout-padding layout="column" class="md-whiteframe-6dp white-background">
+        <form name="loginForm" novalidate layout-padding>
+            <md-input-container class="md-block">
+                <label>Username</label>
+                <input required type="text" name="username" ng-model="user.username">
+                <div ng-if="loginForm.username.$touched" ng-messages="loginForm.username.$error">
+                    <div ng-message="required">This is required.</div>
+                </div>
+            </md-input-container>
 
-                <form name="loginForm" layout-padding>
-                    <md-input-container class="md-block">
-                        <label>Username</label>
-                        <input required type="text" name="username" ng-model="user.username">
-                        <div ng-if="loginForm.username.$touched" ng-messages="loginForm.username.$error">
-                            <div ng-message="required">This is required.</div>
-                        </div>
-                    </md-input-container>
+            <md-input-container class="md-block">
+                <label>Password</label>
+                <input required type="password" name="password" ng-model="user.password">
+                <div ng-if="loginForm.password.$touched" ng-messages="loginForm.password.$error">
+                    <div ng-message="required">This is required.</div>
+                </div>
+            </md-input-container>
 
-                    <md-input-container class="md-block">
-                        <label>Password</label>
-                        <input required type="password" name="password" ng-model="user.password">
-                        <div ng-if="loginForm.password.$touched" ng-messages="loginForm.password.$error">
-                            <div ng-message="required">This is required.</div>
-                        </div>
-                    </md-input-container>
-
-                    <md-input-container>
-                        <md-button ng-click="login(user)" class="md-raised md-primary md-block">Login</md-button>
-                    </md-input-container>
-                </form>
-            </md-whiteframe>
-    </div>
+            <md-input-container>
+                <md-button ng-disabled="loginForm.$invalid" ng-click="login(user)" class="md-raised md-primary md-block">Login</md-button>
+            </md-input-container>
+        </form>
+    </md-whiteframe>
 </div>

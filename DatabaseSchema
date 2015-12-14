@@ -1,15 +1,16 @@
-//List
+// ToDo Lists
 {
   _id:auto,
   name:String
-  owner:userId,
+  owner:int, //userId,
+  color:String, // nullable
   public:bool
 }
 
-//Task
+// Tasks (ToDo's) - each todo's belongs to a ToDo list
 {
   _id:auto,
-  list:listID,
+  list:int, //listID,
   name:String,
   done:bool
 }
@@ -20,6 +21,6 @@
   userName:String,
   role: String,
   name:String,
-  prename:String,
+  firstName:String,
   password:String
 }

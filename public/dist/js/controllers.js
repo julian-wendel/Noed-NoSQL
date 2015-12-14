@@ -18,18 +18,35 @@
 		$scope.navigateTo('tasks', {userId: 1});
 	});
 
-	app.controller('TasksCtrl', function($scope, Tasks, TaskServices) {
-		$scope.tasks = Tasks;
-		var colors = ['yellow', 'green', 'red', 'gray', 'purple', 'blue'];
-		var color = colors[~~(Math.random() * 10) % colors.length];
+	app.controller('TasksCtrl', function($scope, $stateParams, TaskLists, TaskServices) {
+		var COLORS = ['amber', 'lightblue', 'lightyellow', 'green', 'red', 'white', 'purple'];
 
-		for (var i = 0; i < $scope.tasks.length; i++) {
-			angular.extend($scope.tasks[i], {color: color});
-		}
+		var randomColor = function() {
+			return (COLORS[~~(Math.random() * COLORS.length)]);
+		};
 
-		$scope.add = function(task) {
-			TaskServices.add(task).then(function() {
-				// successfull
+		$scope.taskLists = TaskLists;
+		$scope.colors = COLORS;
+		$scope.isOpen = false;
+
+		$scope.taskList = {}; // object for new task list
+		// default values
+		$scope.taskList.public = false;
+		$scope.taskList.color = '';
+
+		$scope.setColor = function(color) {
+			$scope.taskList.color = color;
+		};
+
+		$scope.add = function(taskList) {
+			// join the current logged in user
+			angular.extend(taskList, {owner: $stateParams.userId});
+
+			TaskServices.add(taskList).then(function() {
+				// successfully added a task list, update scope task lists
+				$scope.taskLists.push(taskList);
+				// reset task list
+				$scope.taskList = {};
 			}, function(error) {
 				console.log(error);
 			})

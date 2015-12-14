@@ -1,26 +1,44 @@
-<div class="toolbar" layout-margin layout="row" layout-align="center center">
-    <md-whiteframe flex-gt-md="45" flex="100" layout-align="center center" layout="row" class="md-whiteframe-3dp">
-        <div flex="90">
-            <input placeholder="Add new Task" class="toolbarInput" ng-model="task" type="text">
-        </div>
-        <div flex="10">
-            <md-button class="md-icon-button md-primary" aria-label="Settings">
-                <md-icon md-font-set="material-icons" aria-label="Home" ng-click="add(task);">reorder</md-icon>
-            </md-button>
-         </div>
-    </md-whiteframe>
+<div class="toolbar" layout="column"><!-- layout-margin layout-align="center center"-->
+	<form name="todoForm" novalidate class="input-holder md-whiteframe-3dp" layout="row" layout-align="center center" flex="100" flex-gt-md="45">
+		<input type="text" flex="90" placeholder="Add new task" ng-model="taskList.name" required>
+		<md-button class="md-icon-button md-primary text-right" flex aria-label="Add task" ng-disabled="todoForm.$invalid" ng-click="add(taskList);">
+			<md-icon md-font-set="material-icons">add_circle</md-icon>
+		</md-button>
+	</form>
+
+	<div layout="row" class="color-picker">
+		<md-checkbox class="md-warn md-hue-3" ng-model="taskList.public" aria-label="Public">Public</md-checkbox>
+
+		<md-fab-speed-dial md-open="isOpen" md-direction="right" class="md-scale">
+			<md-fab-trigger>
+				<md-button aria-label="Color" class="md-fab md-mini md-warn {{taskList.color}}-background">
+					<md-icon md-font-set="material-icons"">color_lens</md-icon>
+				</md-button>
+			</md-fab-trigger>
+			<md-fab-actions>
+				<md-button ng-repeat="color in colors" ng-model="taskList.color" ng-click="setColor(color)" aria-label="{{color}}" class="md-fab md-mini {{color}}-background"></md-button>
+			</md-fab-actions>
+		</md-fab-speed-dial>
+	</div>
 </div>
 
-<div ng-cloak class="gridListdemoBasicUsage">
-    <md-grid-list
-            md-cols-sm="1" md-cols-md="2" md-cols-gt-md="5"
-            md-row-height-gt-md="1:1" md-row-height="2:2"
-            md-gutter="12px" md-gutter-gt-sm="8px" >
-        <md-grid-tile ng-repeat="task in tasks" class="{{task.color}}-background" class="md-whiteframe-5dp"
-                      md-rowspan="1" md-colspan="1" md-colspan-sm="1">
-            <md-grid-tile-footer>
-                <h3>{{task.name}}</h3>
+<md-content flex>
+    <md-grid-list md-cols-sm="1" md-cols-md="2" md-cols-gt-md="5" md-row-height-gt-md="1:1" md-row-height="2:2" md-gutter="12px" md-gutter-gt-sm="8px" >
+        <md-grid-tile ng-repeat="list in taskLists | orderBy: '-'" class="{{list.color || 'gray'}}-background" class="md-whiteframe-5dp" md-rowspan="1" md-colspan="1" md-colspan-sm="1">
+			<md-grid-tile-header>
+				<h3>{{list.name}}</h3>
+			</md-grid-tile-header>
+
+			<md-list ng-cloak>
+				<md-list-item>
+					<md-checkbox ng-model="todo.done" aria-label="Task" ng-disabled="todo.done"></md-checkbox>
+					<p>Task 1</p>
+				</md-list-item>
+			</md-list>
+
+			<md-grid-tile-footer ng-if="list.public">
+                <h3>Public</h3>
             </md-grid-tile-footer>
         </md-grid-tile>
     </md-grid-list>
-</div>
+</md-content>

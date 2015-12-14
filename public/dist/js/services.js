@@ -28,15 +28,17 @@
 	}]);
 
 	app.factory('TaskServices', function($q, $http) {
+		var apiPath = '/api/tasks';
+
 		var add = function(task) {
 			var deferred = $q.defer();
 
 			$http({
 				method: 'POST',
-				url: '/api/tasks',
-				data: task
+				url: apiPath,
+				params: task
 			}).then(function(res) {
-				if (res.status === 201)
+				if (res.status === 200)
 					deferred.resolve();
 				else
 					deferred.reject(res.status);
@@ -51,7 +53,25 @@
 
 			$http({
 				method: 'GET',
-				url: '/api/tasks?owner=' + userId
+				url: apiPath,
+				params: {owner: userId}
+			}).then(function(res) {
+				if (res.status === 200)
+					deferred.resolve(res.data);
+				else
+					deferred.reject(res.status);
+			}, function(error, status) {
+				deferred.reject(status);
+			});
+			return deferred.promise;
+		};
+
+		var queryTodos = function() {
+			var deferred = $q.defer();
+
+			$http({
+				method: 'GET',
+				url: '/api/todos'
 			}).then(function(res) {
 				if (res.status === 200)
 					deferred.resolve(res.data);
@@ -68,7 +88,7 @@
 
 			$http({
 				method: 'GET',
-				url: '/api/tasks'
+				url: apiPath
 			}).then(function(res) {
 				if (res.status === 200)
 					deferred.resolve(res.data);
@@ -86,7 +106,8 @@
 
 			$http({
 				method: 'GET',
-				url: '/api/tasks?id=' + id
+				url: apiPath,
+				params: {id: id}
 			}).then(function(res) {
 				if (res.status === 200)
 					deferred.resolve(res.data);
@@ -104,7 +125,8 @@
 
 			$http({
 				method: 'PUT',
-				url: '/api/tasks?id=' + task.id
+				url: apiPath,
+				params: {id: task.id}
 			}).then(function(res) {
 				if (res.status === 201)
 					deferred.resolve();
@@ -122,7 +144,8 @@
 
 			$http({
 				method: 'DELETE',
-				url: '/api/tasks?id=' + task.id
+				url: apiPath,
+				params: {id: task.id}
 			}).then(function(res) {
 				if (res.status === 200)
 					deferred.resolve();
@@ -137,6 +160,7 @@
 		return {
 			add: add,
 			all: all,
+			queryTodos: queryTodos,
 			update: update,
 			remove: remove,
 			getTaskById: getTaskById,

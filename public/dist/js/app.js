@@ -30,7 +30,7 @@ app.config(function($stateProvider, $urlRouterProvider) {
             params: {userId: ':userId'},
             templateUrl: "views/tasks.html",
             resolve: {
-                Tasks: function(TaskServices, $stateParams) {
+				TaskLists: function(TaskServices, $stateParams) {
                     return TaskServices.all($stateParams.userId);
                 }
             },

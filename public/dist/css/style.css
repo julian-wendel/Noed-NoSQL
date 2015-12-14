@@ -1,4 +1,20 @@
 @import url(animate.css);
+body {
+  background-color: #f5f5f5;
+  -webkit-font-smoothing: antialiased; }
+
+* {
+  outline: 0; }
+
+.amber {
+  color: #ff8f00; }
+  .amber-text {
+    color: #ff8f00; }
+  .amber-border {
+    border-color: #ff8f00; }
+  .amber-background {
+    background-color: #ff8f00 !important; }
+
 .black {
   color: #000; }
   .black-text {
@@ -6,7 +22,7 @@
   .black-border {
     border-color: #000; }
   .black-background {
-    background-color: #000; }
+    background-color: #000 !important; }
 
 .blue {
   color: #84ffff; }
@@ -15,25 +31,70 @@
   .blue-border {
     border-color: #84ffff; }
   .blue-background {
-    background-color: #84ffff; }
+    background-color: #84ffff !important; }
+
+.darkgray {
+  color: #333; }
+  .darkgray-text {
+    color: #333; }
+  .darkgray-border {
+    border-color: #333; }
+  .darkgray-background {
+    background-color: #333 !important; }
 
 .gray {
-  color: #f5f5f5; }
+  color: #808080; }
   .gray-text {
-    color: #f5f5f5; }
+    color: #808080; }
   .gray-border {
-    border-color: #f5f5f5; }
+    border-color: #808080; }
   .gray-background {
-    background-color: #f5f5f5; }
+    background-color: #808080 !important; }
 
 .green {
-  color: #b9f6ca; }
+  color: #00e676; }
   .green-text {
-    color: #b9f6ca; }
+    color: #00e676; }
   .green-border {
-    border-color: #b9f6ca; }
+    border-color: #00e676; }
   .green-background {
-    background-color: #b9f6ca; }
+    background-color: #00e676 !important; }
+
+.lightblue {
+  color: #81d4fa; }
+  .lightblue-text {
+    color: #81d4fa; }
+  .lightblue-border {
+    border-color: #81d4fa; }
+  .lightblue-background {
+    background-color: #81d4fa !important; }
+
+.lightgray {
+  color: #f5f5f5; }
+  .lightgray-text {
+    color: #f5f5f5; }
+  .lightgray-border {
+    border-color: #f5f5f5; }
+  .lightgray-background {
+    background-color: #f5f5f5 !important; }
+
+.lightyellow {
+  color: #fff9c4; }
+  .lightyellow-text {
+    color: #fff9c4; }
+  .lightyellow-border {
+    border-color: #fff9c4; }
+  .lightyellow-background {
+    background-color: #fff9c4 !important; }
+
+.purple {
+  color: #b388ff; }
+  .purple-text {
+    color: #b388ff; }
+  .purple-border {
+    border-color: #b388ff; }
+  .purple-background {
+    background-color: #b388ff !important; }
 
 .red {
   color: #ff8a80; }
@@ -42,7 +103,7 @@
   .red-border {
     border-color: #ff8a80; }
   .red-background {
-    background-color: #ff8a80; }
+    background-color: #ff8a80 !important; }
 
 .white {
   color: #fff; }
@@ -51,7 +112,7 @@
   .white-border {
     border-color: #fff; }
   .white-background {
-    background-color: #fff; }
+    background-color: #fff !important; }
 
 .yellow {
   color: #ffff8d; }
@@ -60,32 +121,83 @@
   .yellow-border {
     border-color: #ffff8d; }
   .yellow-background {
-    background-color: #ffff8d; }
+    background-color: #ffff8d !important; }
 
-.gridListdemoBasicUsage md-grid-list {
+.noed-sql .toolbar {
+  margin: 2em auto .8em;
+  width: 50%;
+  -webkit-transition: width 0.3s ease-in;
+  -moz-transition: width 0.3s ease-in;
+  -o-transition: width 0.3s ease-in;
+  transition: width 0.3s ease-in; }
+  @media screen and (max-width: 767px) {
+    .noed-sql .toolbar {
+      width: 90%; } }
+  .noed-sql .toolbar .input-holder {
+    background-color: #fff; }
+    .noed-sql .toolbar .input-holder input {
+      border: none;
+      line-height: 40px;
+      padding: 0 10px;
+      width: 100%; }
+  .noed-sql .toolbar .color-picker {
+    font-size: 90%; }
+    .noed-sql .toolbar .color-picker .md-button {
+      min-height: 0;
+      margin: 3px 5px 0; }
+      .noed-sql .toolbar .color-picker .md-button.md-fab.md-mini {
+        line-height: 10px;
+        width: 20px;
+        height: 20px;
+        display: -webkit-box;
+        display: -webkit-flex;
+        display: -moz-box;
+        display: -moz-flex;
+        display: -ms-flexbox;
+        display: flex;
+        -webkit-box-pack: center;
+        -ms-flex-pack: center;
+        -webkit-justify-content: center;
+        -moz-justify-content: center;
+        justify-content: center; }
+        .noed-sql .toolbar .color-picker .md-button.md-fab.md-mini md-icon {
+          font-size: 16px;
+          width: auto;
+          height: auto; }
+    .noed-sql .toolbar .color-picker md-fab-actions .md-fab {
+      background-color: transparent; }
+
+md-content {
+  background-color: #f5f5f5; }
+
+md-grid-list {
   margin: 8px; }
-.gridListdemoBasicUsage md-grid-tile {
-  -webkit-transition: all 400ms ease-out;
-  -moz-transition: all 400ms ease-out;
-  -o-transition: all 400ms ease-out;
-  transition: all 400ms ease-out; }
-
-.noedSQL .toolbar {
-  margin-top: 2em;
-  margin-bottom: 2em; }
-
-.toolbarInput {
-  font-size: 14px;
-  box-sizing: border-box;
-  border: none;
-  -webkit-box-shadow: none;
-  -moz-box-shadow: none;
-  box-shadow: none;
-  outline: 0;
-  background: 0 0;
-  width: 100%;
-  padding: 0 15px;
-  line-height: 40px;
-  height: 40px; }
+  md-grid-list md-grid-tile {
+    -webkit-transition: all 400ms ease-out;
+    -moz-transition: all 400ms ease-out;
+    -o-transition: all 400ms ease-out;
+    transition: all 400ms ease-out;
+    -webkit-box-shadow: 0 1px 5px rgba(0, 0, 0, 0.5);
+    -moz-box-shadow: 0 1px 5px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.5); }
+    md-grid-list md-grid-tile figure {
+      display: block; }
+    md-grid-list md-grid-tile md-grid-tile-header {
+      background: none; }
+      md-grid-list md-grid-tile md-grid-tile-header h3 {
+        color: #333;
+        font-weight: 500;
+        margin: 0 16px; }
+    md-grid-list md-grid-tile md-list {
+      margin-top: 40px; }
+      md-grid-list md-grid-tile md-list md-list-item {
+        min-height: 28px; }
+        md-grid-list md-grid-tile md-list md-list-item .md-list-item-inner {
+          min-height: 28px; }
+          md-grid-list md-grid-tile md-list md-list-item .md-list-item-inner > md-checkbox:first-child {
+            margin-right: 5px; }
+          md-grid-list md-grid-tile md-list md-list-item .md-list-item-inner p {
+            overflow: hidden;
+            text-overflow: ellipsis; }
 
 /*# sourceMappingURL=style.css.map */

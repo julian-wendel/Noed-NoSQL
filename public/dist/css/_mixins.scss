@@ -100,3 +100,47 @@
   min-height: $radius;
   max-height: $radius;
 }
+
+@mixin display-flex {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -moz-box;
+  display: -moz-flex;
+  display: -ms-flexbox;
+  display: flex;
+}
+
+@mixin align-items($value: stretch) {
+  @if $value == flex-start {
+	-webkit-box-align: start;
+	-ms-flex-align: start;
+  } @else if $value == flex-end {
+	-webkit-box-align: end;
+	-ms-flex-align: end;
+  } @else {
+	-webkit-box-align: $value;
+	-ms-flex-align: $value;
+  }
+  -webkit-align-items: $value;
+  -moz-align-items: $value;
+  align-items: $value;
+}
+
+@mixin justify-content($value: stretch) {
+  @if $value == flex-start {
+	-webkit-box-pack: start;
+	-ms-flex-pack: start;
+  } @else if $value == flex-end {
+	-webkit-box-pack: end;
+	-ms-flex-pack: end;
+  } @else if $value == space-between {
+	-webkit-box-pack: justify;
+	-ms-flex-pack: justify;
+  } @else {
+	-webkit-box-pack: $value;
+	-ms-flex-pack: $value;
+  }
+  -webkit-justify-content: $value;
+  -moz-justify-content: $value;
+  justify-content: $value;
+}
