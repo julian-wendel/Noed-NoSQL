@@ -23,16 +23,40 @@
 </div>
 
 <md-content flex>
-    <md-grid-list md-cols-sm="1" md-cols-md="2" md-cols-gt-md="5" md-row-height-gt-md="1:1" md-row-height="2:2" md-gutter="12px" md-gutter-gt-sm="8px" >
-        <md-grid-tile ng-repeat="list in taskLists | orderBy: '-'" class="{{list.color || 'gray'}}-background" class="md-whiteframe-5dp" md-rowspan="1" md-colspan="1" md-colspan-sm="1">
+    <md-grid-list md-row-height-gt-md="4:4" md-row-height="2:2" md-cols-sm="1" md-cols-md="2" md-cols-gt-md="5" md-gutter="12px" md-gutter-gt-sm="8px" >
+        <md-grid-tile ng-repeat="list in taskLists | orderBy: list.todos.length" class="{{list.color || 'gray'}}-background" class="md-whiteframe-5dp" md-rowspan="1" md-colspan="1" md-colspan-sm="1">
 			<md-grid-tile-header>
 				<h3>{{list.name}}</h3>
 			</md-grid-tile-header>
 
+			<md-menu md-position-mode="target-right target" style="float: right">
+				<md-button aria-label="Open phone interactions menu" class="md-icon-button" ng-click="$mdOpenMenu($event);">
+					<md-icon md-font-set="material-icons">add_circle</md-icon>
+				</md-button>
+				<md-menu-content width="4">
+					<md-menu-item>
+						<form name="{{'todoForm_' + list._id}}">
+							<md-input-container>
+								<label>Title</label>
+								<input required="required" ng-model="todo.name">
+							</md-input-container>
+						</form>
+					</md-menu-item>
+					<md-menu-item></md-menu-item>
+					<md-menu-item>
+						<md-button ng-disabled="{{'todoForm_' + list._id}}.$invalid" ng-click="addTodo(list)">
+							<md-icon class="md-mini md-primary" md-menu-align-target md-font-set="material-icons">add_circle</md-icon>
+							Add TODO
+						</md-button>
+					</md-menu-item>
+				</md-menu-content>
+			</md-menu>
+
+
 			<md-list ng-cloak>
-				<md-list-item>
+				<md-list-item ng-repeat="todo in list.todos">
 					<md-checkbox ng-model="todo.done" aria-label="Task" ng-disabled="todo.done"></md-checkbox>
-					<p>Task 1</p>
+					<p>{{todo.name}}</p>
 				</md-list-item>
 			</md-list>
 
