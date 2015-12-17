@@ -71,7 +71,6 @@ router.post('/', function(req, res) {
         .then(comparePassword)
         .then(createToken)
         .then(function(token){
-            console.log(token);
             res.json({token: token});
         })
         .catch(function(error){
