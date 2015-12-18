@@ -8,130 +8,104 @@ var conStr = "mongodb://127.0.0.1:27017/nosql";
 var uuid = require('uuid');
 
 //Get items from database
-router.get('/', function(req, res, next) {
-    if (req.query) {
-        database.connect(conStr, function(err, db) {
-            if(!err) {
-                console.log("We are connected");
-                db.collection("tasks").find({ owner: req.jwt.id}).toArray(function(err, result)
-                {
-                    if(err){
-                        console.log(err);
-                        db.close();
-                        res.sendStatus(404);
-                    }
-                    else{
-                        db.close();
-                        res.send(result);
-                    }
-                });
-            }
-            else{
-                console.log(err);
-            }
-        });
+router.get('/', function (req, res, next) {
+    var find;
+    if (req.query && !req.query.public) {
+        find = {owner: req.jwt.id};
     }
     else if (req.query && req.query.public) {
-        database.connect(conStr, function(err, db) {
-            if(!err) {
-                console.log("We are connected");
-                db.collection("tasks").find({ public: req.param('public')}).toArray(function(err, result)
-                {
-                    if(err){
-                        console.log(err);
-                        db.close();
-                        res.sendStatus(404);
-                    }
-                    else{
-                        db.close();
-                        res.send(result);
-                    }
-                });
-            }
-            else{
-                console.log(err);
-            }
-        });
+        find = {public: req.query.public};
     }
     else
         res.sendStatus(400);
+    database.connect(conStr, function (err, db) {
+        if (!err) {
+            console.log("We are connected");
+            db.collection("tasks").find(find).toArray(function (err, result) {
+                if (err) {
+                    console.log(err);
+                    db.close();
+                    res.sendStatus(404);
+                }
+                else {
+                    db.close();
+                    res.send(result);
+                }
+            });
+        }
+        else {
+            console.log(err);
+        }
+    });
 });
 
 //insert a todo task into database
 router.post('/', function (req, res, next) {
-	if (req.query && req.query.name && req.query.public && req.query.color) {
+    if (req.query && req.query.name && req.query.public && req.query.color) {
         var task = req.query;
         task.owner = [req.jwt.id];
         task._id = uuid.v1();
         task.todos = [];
-		database.connect(conStr, function (err, db) {
-			if (!err) {
-				// insert using a promise
-				db.collection('tasks').insertOne(task).then(function(result) {
-					console.log("Successfully added a task list to database.");
-					db.close();
-					// not returning anything, just send OK status
-					res.json(task);
-				}, function(err) {
-					console.log('Error adding task list. Error: ' + err);
-					db.close();
-					res.sendStatus(404);
-				});
-			} else {
-				console.log('Error connecting to database. Reason: ' + err);
-				db.close();
-				res.sendStatus(500);
-			}
-		});
-	} else
-		res.sendStatus(400);
+        database.connect(conStr, function (err, db) {
+            if (!err) {
+                db.collection('tasks').insertOne(task).then(function (result) {
+                    db.close();
+                    res.json(task);
+                }, function (err) {
+                    db.close();
+                    res.sendStatus(404);
+                });
+            } else {
+                db.close();
+                res.sendStatus(500);
+            }
+        });
+    } else
+        res.sendStatus(400);
 });
 
 //update item in database
-router.put('/', function(req, res, next) {
-    if(req.query && req.param('_id') && req.param('name') && req.param('public')){
-        database.connect(conStr, function(err, db) {
-            if(!err) {
-                console.log("We are connected");
+router.put('/', function (req, res, next) {
+    if (req.query && req.query.id && req.query.name && req.query.public) {
+        database.connect(conStr, function (err, db) {
+            if (!err) {
                 var updateOwner = false;
-                var task = db.collection('tasks').find({"_id":req.param('_id')}).toArray();
-                if(task.owner.indexOf(req.jwt.id) == -1)
+                var task = db.collection('tasks').find({"_id": req.query.id}).toArray();
+                if (task.owner.indexOf(req.jwt.id) == -1)
                     updateOwner = true;
 
-                if(updateOwner) {
+                if (updateOwner) {
                     db.collection('tasks').updateOne(
                         {"_id": req.param('_id')},
                         {
                             $set: {
-                                "name": req.param('name'),
-                                "public": req.param('public')
+                                "name": req.query.name,
+                                "public": req.query.public
                             },
                             $push: {
                                 "owner": req.jwt.id
                             }
                         }, function (err, results) {
-                            console.log(results);
                             db.close();
-                            res.send(callback());
+                            task.owner.add(req.jwt.id);
+                            res.send(task);
                         });
                 }
-                else{
+                else {
                     db.collection('tasks').updateOne(
                         {"_id": req.param('_id')},
                         {
                             $set: {
-                                "name": req.param('name'),
-                                "public": req.param('public')
+                                "name": req.query.name,
+                                "public": req.query.public
                             }
                         }, function (err, results) {
-                            console.log(results);
                             db.close();
-                            res.send(callback());
+                            res.send(task);
                         });
                 }
             }
-            else{
-                console.log(err);
+            else {
                 db.close();
                 res.sendStatus(500);
             }
@@ -142,21 +116,19 @@ router.put('/', function(req, res, next) {
 });
 
 //delete item from database
-router.delete('/', function(req, res, next) {
-    if(req.query && req.param('_id')){
-        database.connect(conStr, function(err, db) {
-            if(!err) {
+router.delete('/', function (req, res, next) {
+    if (req.query && req.query.id) {
+        database.connect(conStr, function (err, db) {
+            if (!err) {
                 console.log("We are connected");
                 db.collection('tasks').deleteOne(
-                    { "_id": req.param('_id') },
-                    function(err, results) {
-                        console.log(results);
-                        res.send(callback());
+                    {"_id": req.query.id},
+                    function (err, results) {
+                        res.sendStatus(200);
                     }
                 );
             }
-            else{
-                console.log(err);
+            else {
                 db.close();
                 res.sendStatus(500);
             }
