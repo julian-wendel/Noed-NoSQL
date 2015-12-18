@@ -54,7 +54,6 @@
 			$http({
 				method: 'GET',
 				url: apiPath,
-				params: {owner: userId}
 			}).then(function(res) {
 				if (res.status === 200)
 					deferred.resolve(res.data);
@@ -129,7 +128,7 @@
 			$http({
 				method: 'PUT',
 				url: apiPath,
-				params: {id: task.id, owner:task.owner, name:task.name, public:task.public}
+				params: {id: task.id, name:task.name, public:task.public}
 			}).then(function(res) {
 				if (res.status === 201)
 					deferred.resolve();
@@ -166,7 +165,7 @@
 			$http({
 				method: 'DELETE',
 				url: apiPath,
-				params: {id: task.id, name: todo.name}
+				params: {_id: task.id, name: todo.name}
 			}).then(function(res) {
 				if (res.status === 200)
 					deferred.resolve();
