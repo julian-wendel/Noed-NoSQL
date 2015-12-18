@@ -86,6 +86,7 @@ function hashPassword(args) {
 }
 
 function storeUser(args) {
+    args.user._id = uuid.v1();
     return new Promise(function (resolve, reject) {
         args.db.collection('users').insertOne(args.user, {}, function (err, result) {
             if (err)
