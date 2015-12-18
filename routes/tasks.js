@@ -9,12 +9,33 @@ var uuid = require('uuid');
 
 //Get items from database
 router.get('/', function(req, res, next) {
-    if (req.query) {
-        var tasks = null;
+    if (req.query && req.query.owner) {
         database.connect(conStr, function(err, db) {
             if(!err) {
                 console.log("We are connected");
-                db.collection("tasks").find(req.query).toArray(function(err, result)
+                db.collection("tasks").find({ owner: { $elemMatch: {$in:req.param('owner')}}}).toArray(function(err, result)
+                {
+                    if(err){
+                        console.log(err);
+                        db.close();
+                        res.sendStatus(404);
+                    }
+                    else{
+                        db.close();
+                        res.send(result);
+                    }
+                });
+            }
+            else{
+                console.log(err);
+            }
+        });
+    }
+    else if (req.query && req.query.public) {
+        database.connect(conStr, function(err, db) {
+            if(!err) {
+                console.log("We are connected");
+                db.collection("tasks").find({ public: req.param('public')}).toArray(function(err, result)
                 {
                     if(err){
                         console.log(err);
@@ -40,6 +61,7 @@ router.get('/', function(req, res, next) {
 router.post('/', function (req, res, next) {
 	if (req.query && req.query.owner && req.query.name && req.query.public && req.query.color) {
         var task = req.query;
+        task.owner = [req.query.owner];
         task._id = uuid.v1();
         task.todos = [];
 		database.connect(conStr, function (err, db) {
@@ -67,23 +89,45 @@ router.post('/', function (req, res, next) {
 
 //update item in database
 router.put('/', function(req, res, next) {
-    if(req.query && req.param('_id') && req.param('name') && req.param('public')){
+    if(req.query && req.param('_id') && req.param('name') && req.param('public') && req.param('owner')){
         database.connect(conStr, function(err, db) {
             if(!err) {
                 console.log("We are connected");
-                db.collection('tasks').updateOne(
-                    { "_id" : req.param('_id') },
-                    {
-                        $set: {
-                            "_id": req.param('_id'),
-                            "name": req.param('name'),
-                            "public": req.param('public')
-                        }
-                    }, function(err, results) {
-                        console.log(results);
-                        db.close();
-                        res.send(callback());
-                    });
+                var updateOwner = false;
+                var task = db.collection('tasks').find({"_id":req.param('_id')}).toArray();
+                if(task.owner.indexOf(req.param('owner')) == -1)
+                    updateOwner = true;
+                if(updateOwner) {
+                    db.collection('tasks').updateOne(
+                        {"_id": req.param('_id')},
+                        {
+                            $set: {
+                                "name": req.param('name'),
+                                "public": req.param('public')
+                            },
+                            $push: {
+                                "owner": req.param('owner')
+                            }
+                        }, function (err, results) {
+                            console.log(results);
+                            db.close();
+                            res.send(callback());
+                        });
+                }
+                else{
+                    db.collection('tasks').updateOne(
+                        {"_id": req.param('_id')},
+                        {
+                            $set: {
+                                "name": req.param('name'),
+                                "public": req.param('public')
+                            }
+                        }, function (err, results) {
+                            console.log(results);
+                            db.close();
+                            res.send(callback());
+                        });
+                }
             }
             else{
                 console.log(err);

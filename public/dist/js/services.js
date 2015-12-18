@@ -89,7 +89,8 @@
 
 			$http({
 				method: 'GET',
-				url: apiPath
+				url: apiPath,
+                params:{public:task.public}
 			}).then(function(res) {
 				if (res.status === 200)
 					deferred.resolve(res.data);
@@ -102,6 +103,7 @@
 			return deferred.promise;
 		};
 
+		/*DEPRECATED
 		var getTaskById = function(id) {
 			var deferred = $q.defer();
 
@@ -119,7 +121,7 @@
 			});
 
 			return deferred.promise;
-		};
+		};*/
 
 		var update = function(task) {
 			var deferred = $q.defer();
@@ -127,7 +129,7 @@
 			$http({
 				method: 'PUT',
 				url: apiPath,
-				params: {id: task.id}
+				params: {id: task.id, owner:task.owner, name:task.name, public:task.public}
 			}).then(function(res) {
 				if (res.status === 201)
 					deferred.resolve();
@@ -182,7 +184,7 @@
 			//queryTodos: queryTodos,
 			update: update,
 			remove: remove,
-			getTaskById: getTaskById,
+			//getTaskById: getTaskById,
 			getAllPublicTasks: getAllPublicTasks
 		}
 	});
