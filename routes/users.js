@@ -3,6 +3,7 @@ var router = express.Router();
 var bcrypt = require('bcryptjs');
 var Promise = require('bluebird');
 var mongodb = require('mongodb').MongoClient;
+var uuid = require('uuid');
 
 var conStr = "mongodb://127.0.0.1:27017/nosql";
 
@@ -23,7 +24,7 @@ function findAllUsers(args) {
             _id: 1,
             role: 1,
             username: 1,
-            prename: 1,
+            firstName: 1,
             name: 1
         }).toArray(function (err, res) {
             if (err)
@@ -40,7 +41,7 @@ function findOneUser(args) {
             _id: 1,
             role: 1,
             username: 1,
-            prename: 1,
+            firstName: 1,
             name: 1
         }).toArray(function (err, res) {
             if (err || res.length == 0)
@@ -56,12 +57,12 @@ function createUserFromReq(args) {
         var user = {};
         user.username = args.req.body.username;
         user.name = args.req.body.name;
-        user.prename = args.req.body.prename;
-        user.password = args.req.body.username;
+        user.firstName = args.req.body.firstName;
+        user.password = args.req.body.password;
         user.role = args.req.body.role;
 
         args.user = user;
-        if (!(user.username && user.name && user.prename && user.password && user.role))
+        if (!(user.username && user.name && user.firstName && user.password && user.role))
             reject({status: 400, err: new Error('Bad Request')});
         else
             resolve(args);
@@ -87,6 +88,52 @@ function hashPassword(args) {
 function storeUser(args) {
     return new Promise(function (resolve, reject) {
         args.db.collection('users').insertOne(args.user, {}, function (err, result) {
+            if (err)
+                reject({status: 400, err: err});
+            else
+                resolve({db: args.db, user: result});
+        });
+    });
+}
+
+function addDefaultTasks(args) {
+    console.log(args.user.ops[0]._id);
+    var defaultTasks = [
+        {
+            "name": "Daily",
+            "_id": uuid.v1(),
+            "todos": [],
+            "public": false,
+            "owner": [args.user.ops[0]._id],
+            "color": "lightblue"
+        },
+        {
+            "name": "Private Backlog",
+            "_id": uuid.v1(),
+            "todos": [],
+            "public": false,
+            "owner": [args.user.ops[0]._id],
+            "color": "lightblue"
+        },
+        {
+            "name": "Work Backlog",
+            "_id": uuid.v1(),
+            "todos": [],
+            "public": false,
+            "owner": [args.user.ops[0]._id],
+            "color": "lightblue"
+        },
+        {
+            "name": "Shopping",
+            "_id": uuid.v1(),
+            "todos": [],
+            "public": false,
+            "owner": [args.user.ops[0]._id],
+            "color": "lightblue"
+        }];
+
+    return new Promise(function (resolve, reject) {
+        args.db.collection('tasks').insertMany(defaultTasks, function (err, result) {
             if (err)
                 reject({status: 400, err: err});
             else
@@ -135,6 +182,7 @@ router.post('/', function (req, res, next) {
         .then(createUserFromReq)
         .then(hashPassword)
         .then(storeUser)
+        .then(addDefaultTasks)
         .then(function (user) {
             res.json(user);
         })

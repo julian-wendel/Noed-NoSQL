@@ -74,7 +74,7 @@
 				url: apiPath
 			}).then(function(res) {
 				if (res.status === 200) {
-                    if(res.data.isEmpty()){
+                    if(!res.data){
                         addDefaults({createDefaults:true});
                         return all(userId);
                     }

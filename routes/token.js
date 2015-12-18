@@ -38,6 +38,7 @@ function findUser(args){
 function comparePassword(args){
     return new Promise(function(resolve, reject) {
         bcrypt.compare(args.req.body.password, args.users[0].password, function comparePassword(err, result) {
+            console.log('Passwords equal?' + result);
             if (err || !result)
                 reject({status: 400, err: err});
             else
