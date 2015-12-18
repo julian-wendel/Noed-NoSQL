@@ -44,40 +44,30 @@
 			// join the current logged in user
 			angular.extend(taskList, {owner: $stateParams.userId});
 
-			TaskServices.add(taskList).then(function() {
+			TaskServices.add(taskList).then(function(data) {
 				// successfully added a task list, update scope task lists
-				$scope.taskLists.push(taskList);
+				$scope.taskLists.push(data);
 				// reset task list
 				$scope.taskList = {};
 			}, function(error) {
 				console.log(error);
 			})
 		}
+	});
 
-
-		function createTodos() {
-			console.log($scope.taskLists);
-			for (var index=0; index<$scope.taskLists.length; index++) {
-				var task = $scope.taskLists[index];
-
-				console.log(task);
-				task.todos = new Array();
-				var count = Math.floor((Math.random() * 3) + 1);
-				console.log(count);
-
-				for(var i=0; i<count; i++) {
-					task.todos.push({name: 'TODO ' + i});
-				}
-			}
-		}
-		createTodos();
-
+	app.controller('TodoCtrl', function($scope, TodoService) {
 		$scope.todo = {};
-		$scope.todo.name;
 
-		$scope.addTodo = function(list) {
-			console.log(list);
-			list.todos.push({name: $scope.todo.name});
+		$scope.addTodo = function (list) {
+			TodoService.add(list, $scope.todo).then(function (data) {
+				console.log(data);
+				list.todos.push(data);
+				$scope.todo = {};
+			});
+		}
+
+		$scope.update = function (list, todo) {
+			TodoService.update(list, todo).then(function (data) {});
 		}
 	});
 }());

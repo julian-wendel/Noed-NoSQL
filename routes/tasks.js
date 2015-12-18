@@ -5,6 +5,7 @@ var express = require('express');
 var router = express.Router();
 var database = require('mongodb').MongoClient;
 var conStr = "mongodb://127.0.0.1:27017/nosql";
+var uuid = require('uuid');
 
 //Get items from database
 router.get('/', function(req, res, next) {
@@ -38,14 +39,17 @@ router.get('/', function(req, res, next) {
 //insert a todo task into database
 router.post('/', function (req, res, next) {
 	if (req.query && req.query.owner && req.query.name && req.query.public && req.query.color) {
+        var task = req.query;
+        task._id = uuid.v1();
+        task.todos = [];
 		database.connect(conStr, function (err, db) {
 			if (!err) {
 				// insert using a promise
-				db.collection('tasks').insertOne(req.query).then(function(result) {
+				db.collection('tasks').insertOne(task).then(function(result) {
 					console.log("Successfully added a task list to database.");
 					db.close();
 					// not returning anything, just send OK status
-					res.sendStatus(res.statusCode);
+					res.json(task);
 				}, function(err) {
 					console.log('Error adding task list. Error: ' + err);
 					db.close();

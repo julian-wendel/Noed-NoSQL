@@ -5,7 +5,7 @@ var express = require('express');
 var router = express.Router();
 var database = require('mongodb').MongoClient;
 var conStr = "mongodb://127.0.0.1:27017/nosql";
-
+var uuid = require('uuid');
 //Get items from database
 router.get('/', function(req, res, next) {
     if(req.query && req.param('_id') && req.param('_todoId')){
@@ -40,22 +40,29 @@ router.get('/', function(req, res, next) {
 //insert item into database
 router.post('/', function(req, res, next) {
     if(req.query && req.param('_id') && req.param('name')){
+        var todo = {
+            name: req.param('name'),
+            done: false,
+            _id: uuid.v1()
+        };
+
         database.connect(conStr, function(err, db) {
             if(!err) {
                 console.log("We are connected");
-                database.connect(conStr, function(err, db) {
                     if(!err) {
+                        //TODO int parsing
                         db.collection('tasks').updateOne(
                         { "_id" : req.param('_id') },
                         {
                             $push: {
-                                "todos": {"name" : req.param('name')}
+                                todos: todo
                             }
                         }, function(err, result) {
-                            assert.equal(err, null);
-                            console.log("Task successfully added to List ");
+                            //assert.equal(err, null);
+                            console.log("Todo successfully added to TaskList ");
+                                console.log(result);
                             db.close();
-                            res.send(callback(result));
+                            res.json(todo);
                         });
                     }
                     else{
@@ -63,7 +70,6 @@ router.post('/', function(req, res, next) {
                         db.close();
                         res.sendStatus(500);
                     }
-                });
             }
             else{
                 console.log(err);
@@ -85,12 +91,12 @@ router.put('/', function(req, res, next) {
                     {
                         $set: {
                             "todos.$.name": req.param('name'),
-                            "todos.$.done": req.param('done')
+                            "todos.$.done": 'true' == req.param('done')
                         }
                     }, function(err, results) {
                         console.log(results);
                         db.close();
-                        res.send(callback());
+                        res.sendStatus(200);
                     });
             }
             else{
@@ -120,7 +126,7 @@ router.delete('/', function(req, res, next) {
                     },
                     function(err, results) {
                         console.log(results);
-                        res.send(callback());
+                        res.json(result);
                     }
                 );
             }

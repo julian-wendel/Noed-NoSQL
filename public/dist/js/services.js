@@ -39,7 +39,7 @@
 				params: task
 			}).then(function(res) {
 				if (res.status === 200)
-					deferred.resolve();
+					deferred.resolve(res.data);
 				else
 					deferred.reject(res.status);
 			}, function(error, status) {
@@ -158,6 +158,24 @@
 			return deferred.promise;
 		};
 
+		var addTodo = function(task, todo) {
+			var deferred = $q.defer();
+
+			$http({
+				method: 'DELETE',
+				url: apiPath,
+				params: {id: task.id, name: todo.name}
+			}).then(function(res) {
+				if (res.status === 200)
+					deferred.resolve();
+				else
+					deferred.reject(res.status);
+			}, function(error, status) {
+				deferred.reject(status);
+			});
+			return deferred.promise;
+		};
+
 		return {
 			add: add,
 			all: all,
@@ -168,4 +186,50 @@
 			getAllPublicTasks: getAllPublicTasks
 		}
 	});
-}());
+	app.factory('TodoService', function($q, $http) {
+		var apiPath = '/api/todos';
+
+		var add = function(task, todo) {
+			var deferred = $q.defer();
+
+			$http({
+				method: 'POST',
+				url: apiPath,
+				params: {_id: task._id, name: todo.name}
+			}).then(function(res) {
+				if (res.status === 200)
+					deferred.resolve(res.data);
+				else
+					deferred.reject(res.status);
+			}, function(error, status) {
+				deferred.reject(status);
+			});
+			return deferred.promise;
+		};
+
+		var update = function(task, todo) {
+			var deferred = $q.defer();
+
+			console.log(todo);
+			$http({
+				method: 'PUT',
+				url: apiPath,
+				params: {_id: task._id, _todoId: todo._id, done: todo.done, name: todo.name}
+			}).then(function(res) {
+				if (res.status === 200)
+					deferred.resolve(res.data);
+				else
+					deferred.reject(res.status);
+			}, function(error, status) {
+				deferred.reject(status);
+			});
+			return deferred.promise;
+		};
+
+		return {
+			add: add,
+			update: update
+		}
+	});
+
+	}());
