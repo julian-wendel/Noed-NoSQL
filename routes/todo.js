@@ -8,27 +8,23 @@ var conStr = "mongodb://127.0.0.1:27017/nosql";
 
 //Get items from database
 router.get('/', function(req, res, next) {
-    if (req.query) {
+    if(req.query && req.param('_id') && req.param('_todoId')){
         database.connect(conStr, function(err, db) {
             if(!err) {
                 console.log("We are connected");
-				var docs = db.collection('todos').find(req.query);
+				db.collection('tasks').find({"_id":req.param('_id')},{todos: { $elemMatch: { "_id":req.param('_todoId')}}}).toArray(function(err, result)
+                {
+                    if(err){
+                        console.log(err);
+                        db.close();
+                        res.sendStatus(404);
+                    }
+                    else{
+                        db.close();
+                        res.send(result);
+                    }
+                });
 
-				if (docs !== null) {
-					docs.toArray(function(err, result) {
-						if (err) {
-							db.close();
-							res.sendStatus(404);
-						} else {
-							db.close();
-							res.send(result);
-						}
-					});
-				} else {
-					// no result returned from DB
-					db.close();
-					res.sendStatus(res.statusCode);
-				}
             } else {
 				// error connecting to database
                 console.log(err);
@@ -43,16 +39,18 @@ router.get('/', function(req, res, next) {
 
 //insert item into database
 router.post('/', function(req, res, next) {
-    if(req.query && req.param('list') && req.param('name')){
+    if(req.query && req.param('_id') && req.param('name')){
         database.connect(conStr, function(err, db) {
             if(!err) {
                 console.log("We are connected");
                 database.connect(conStr, function(err, db) {
                     if(!err) {
-                        db.collection('todos').insertOne( {
-                            "list":req.param('owner'),
-                            "name":req.param('name'),
-                            "done": false
+                        db.collection('tasks').updateOne(
+                        { "_id" : req.param('_id') },
+                        {
+                            $push: {
+                                "todos": {"name" : req.param('name')}
+                            }
                         }, function(err, result) {
                             assert.equal(err, null);
                             console.log("Task successfully added to List ");
@@ -78,18 +76,16 @@ router.post('/', function(req, res, next) {
 
 //update item in database
 router.put('/', function(req, res, next) {
-    if(req.query && req.param('_id') && req.param('list') && req.param('name') && req.param('done')){
+    if(req.query && req.param('_id') && req.param('_todoId') && req.param('name') && req.param('done')){
         database.connect(conStr, function(err, db) {
             if(!err) {
                 console.log("We are connected");
-                db.collection('todos').updateOne(
-                    { "_id" : req.param('_id') },
+                db.collection('tasks').updateOne(
+                    { "_id" : req.param('_id'), "todos._id" : req.param('_todoId') },
                     {
                         $set: {
-                            "_id": req.param('_id'),
-                            "list": req.param('list'),
-                            "name": req.param('name'),
-                            "done": req.param('public')
+                            "todos.$.name": req.param('name'),
+                            "todos.$.done": req.param('done')
                         }
                     }, function(err, results) {
                         console.log(results);
@@ -111,12 +107,17 @@ router.put('/', function(req, res, next) {
 //delete item from database
 router.delete('/', function(req, res, next) {
     //delete single item
-    if(req.query && req.param('_id')){
+    if(req.query && req.param('_id') && req.param('_todoId')){
         database.connect(conStr, function(err, db) {
             if(!err) {
                 console.log("We are connected");
-                db.collection('todos').deleteOne(
+                db.collection('tasks').updateOne(
                     { "_id": req.param('_id') },
+                    {
+                        $pull: {
+                            'todos': {'_id': req.param('_todoId')}
+                        }
+                    },
                     function(err, results) {
                         console.log(results);
                         res.send(callback());
@@ -131,12 +132,15 @@ router.delete('/', function(req, res, next) {
         });
     }
     //delete all items in task
-    else if (req.query && req.param('list')){
+    else if (req.query && req.param('_id')){
         database.connect(conStr, function(err, db) {
             if(!err) {
                 console.log("We are connected");
-                db.collection('todos').deleteMany(
-                    { "list": req.param('list') },
+                db.collection('tasks').updateOne(
+                    { "_id": req.param('_id') },
+                    {
+                        $pullAll: {'todos':[]}
+                    },
                     function(err, results) {
                         console.log(results);
                         res.send(callback());

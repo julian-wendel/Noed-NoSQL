@@ -98,7 +98,6 @@ router.delete('/', function(req, res, next) {
         database.connect(conStr, function(err, db) {
             if(!err) {
                 console.log("We are connected");
-                deleteAllTasksInList(listId,db,callback);
                 db.collection('tasks').deleteOne(
                     { "_id": req.param('_id') },
                     function(err, results) {

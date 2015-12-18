@@ -1,18 +1,34 @@
-// ToDo Lists
+//DEPRECATED
+//// ToDo Lists
+//{
+//  _id:auto,
+//  name:String
+//  owner:int, //userId,
+//  color:String, // nullable
+//  public:bool
+//}
+//
+//// Tasks (ToDo's) - each todo's belongs to a ToDo list
+//{
+//  _id:auto,
+//  list:int, //listID,
+//  name:String,
+//  done:bool
+//}
+//END DEPRECATED
+
+//Tasks
 {
   _id:auto,
   name:String
   owner:int, //userId,
   color:String, // nullable
   public:bool
-}
-
-// Tasks (ToDo's) - each todo's belongs to a ToDo list
-{
-  _id:auto,
-  list:int, //listID,
-  name:String,
-  done:bool
+  todos:{
+          _id:auto,
+          name:String,
+          done:bool
+        }
 }
 
 //User

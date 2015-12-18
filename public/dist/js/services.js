@@ -66,6 +66,7 @@
 			return deferred.promise;
 		};
 
+/*DEPRECATED
 		var queryTodos = function() {
 			var deferred = $q.defer();
 
@@ -81,7 +82,7 @@
 				deferred.reject(status);
 			});
 			return deferred.promise;
-		};
+		};*/
 
 		var getAllPublicTasks = function() {
 			var deferred = $q.defer();
@@ -160,7 +161,7 @@
 		return {
 			add: add,
 			all: all,
-			queryTodos: queryTodos,
+			//queryTodos: queryTodos,
 			update: update,
 			remove: remove,
 			getTaskById: getTaskById,
