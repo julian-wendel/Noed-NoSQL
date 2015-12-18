@@ -48,15 +48,40 @@
 			return deferred.promise;
 		};
 
+        var addDefaults = function(createDefaults) {
+            var deferred = $q.defer();
+
+            $http({
+                method: 'POST',
+                url: apiPath,
+                params: createDefaults
+            }).then(function(res) {
+                if (res.status === 200)
+                    deferred.resolve(res.data);
+                else
+                    deferred.reject(res.status);
+            }, function(error, status) {
+                deferred.reject(status);
+            });
+            return deferred.promise;
+        };
+
 		var all = function(userId) {
 			var deferred = $q.defer();
 
 			$http({
 				method: 'GET',
-				url: apiPath,
+				url: apiPath
 			}).then(function(res) {
-				if (res.status === 200)
-					deferred.resolve(res.data);
+				if (res.status === 200) {
+                    if(res.data.isEmpty()){
+                        addDefaults({createDefaults:true});
+                        return all(userId);
+                    }
+                    else {
+                        deferred.resolve(res.data);
+                    }
+                }
 				else
 					deferred.reject(res.status);
 			}, function(error, status) {
@@ -183,6 +208,7 @@
 			//queryTodos: queryTodos,
 			update: update,
 			remove: remove,
+            addDefaults : addDefaults,
 			//getTaskById: getTaskById,
 			getAllPublicTasks: getAllPublicTasks
 		}

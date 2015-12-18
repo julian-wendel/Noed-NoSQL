@@ -62,7 +62,57 @@ router.post('/', function (req, res, next) {
                 res.sendStatus(500);
             }
         });
-    } else
+    }
+    else if (req.query && req.query.createDefaults) {
+        var defaultTasks = [
+            {
+                "name": "Daily",
+                "_id": uuid.v1(),
+                "todos": [],
+                "public": false,
+                "owner": [req.jwt.id],
+                "color": "lightblue"
+            },
+            {
+                "name": "Private Backlog",
+                "_id": uuid.v1(),
+                "todos": [],
+                "public": false,
+                "owner": [req.jwt.id],
+                "color": "lightblue"
+            },
+            {
+                "name": "Work Backlog",
+                "_id": uuid.v1(),
+                "todos": [],
+                "public": false,
+                "owner": [req.jwt.id],
+                "color": "lightblue"
+            },
+            {
+                "name": "Shopping",
+                "_id": uuid.v1(),
+                "todos": [],
+                "public": false,
+                "owner": [req.jwt.id],
+                "color": "lightblue"
+            }];
+        database.connect(conStr, function (err, db) {
+            if (!err) {
+                db.collection('tasks').insertMany(defaultTasks).then(function (result) {
+                    db.close();
+                    res.statusCode(200);
+                }, function (err) {
+                    db.close();
+                    res.sendStatus(404);
+                });
+            } else {
+                db.close();
+                res.sendStatus(500);
+            }
+        });
+    }
+    else
         res.sendStatus(400);
 });
 
@@ -78,8 +128,7 @@ router.put('/', function (req, res, next) {
                 if (task.owner.indexOf(req.jwt.id) == -1)
                     updateOwner = true;
                 if (updateOwner) {
-                    if(req.query.release)
-                    {
+                    if (req.query.release) {
                         db.collection('tasks').updateOne(
                             {"_id": req.param('_id')},
                             {
