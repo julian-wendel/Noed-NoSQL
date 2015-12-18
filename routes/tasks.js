@@ -14,7 +14,7 @@ router.get('/', function (req, res, next) {
         find = {owner: req.jwt.id};
     }
     else if (req.query && req.query.public) {
-        find = {public: req.query.public};
+        find = {public: req.query.public == 'true'};
     }
     else
         res.sendStatus(400);
@@ -46,6 +46,8 @@ router.post('/', function (req, res, next) {
         task.owner = [req.jwt.id];
         task._id = uuid.v1();
         task.todos = [];
+        task.public = (task.public == 'true');
+
         database.connect(conStr, function (err, db) {
             if (!err) {
                 db.collection('tasks').insertOne(task).then(function (result) {
@@ -67,6 +69,8 @@ router.post('/', function (req, res, next) {
 //update item in database
 router.put('/', function (req, res, next) {
     if (req.query && req.query.id && req.query.name && req.query.public) {
+        var task = req.query;
+        task.public = (task.public == 'true');
         database.connect(conStr, function (err, db) {
             if (!err) {
                 var updateOwner = false;
