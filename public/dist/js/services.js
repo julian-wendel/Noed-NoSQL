@@ -8,7 +8,7 @@
 	app.factory('UserService', ['$q','$http', function($q, $http) {
 		return {
 			setAuthHeader: function(token){
-				$http.defaults.headers.common['X-Auth'] = token;
+				$http.defaults.headers.common['X-Auth-Token'] = token;
 			},
 
 			login: function(data){

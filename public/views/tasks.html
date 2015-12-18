@@ -1,11 +1,12 @@
 <div class="toolbar" layout="column"><!-- layout-margin layout-align="center center"-->
 	<form name="todoForm" novalidate class="input-holder md-whiteframe-3dp" layout="row" layout-align="center center" flex="100" flex-gt-md="45">
-		<input type="text" flex="90" placeholder="Add new task" ng-model="taskList.name" required>
+		<input type="text" flex="80" placeholder="Add new task" ng-model="taskList.name" required>
 		<md-button class="md-icon-button md-primary text-right" flex aria-label="Add task" ng-disabled="todoForm.$invalid" ng-click="add(taskList);">
 			<md-icon md-font-set="material-icons">add_circle</md-icon>
 		</md-button>
-		<md-button class="md-raised" flex aria-label="Public tasks">
-			<md-icon md-svg-icon="social:people" class="s48" aria-label="shared tasks"></md-icon>
+
+		<md-button class="md-icon-button md-primary text-right" flex aria-label="Shared Lists" ng-click="showSharedListsDialog()">
+			<md-icon md-font-set="material-icons">group</md-icon>
 		</md-button>
 	</form>
 

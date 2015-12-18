@@ -17,7 +17,7 @@
 		}
 	});
 
-	app.controller('TasksCtrl', function($scope, $stateParams, TaskLists, TaskServices) {
+	app.controller('TasksCtrl', function($scope, $mdMedia, $mdDialog, $stateParams, TaskLists, TaskServices) {
 		var COLORS = ['amber', 'lightblue', 'lightyellow', 'green', 'red', 'white', 'purple'];
 
 		var randomColor = function() {
@@ -52,6 +52,22 @@
 				console.log(error);
 			})
 		}
+
+		$scope.showSharedListsDialog = function (ev) {
+			var useFullScreen = ($mdMedia('sm') || $mdMedia('xs'));
+
+			$mdDialog.show({
+				templateUrl: 'views/tasks.shared.html',
+				parent: angular.element(document.body),
+				targetEvent: ev,
+				clickOutsideToClose: true,
+				fullscreen: useFullScreen
+			});
+		}
+
+		$scope.cancel = function(){
+			$mdDialog.hide();
+		}
 	});
 
 	app.controller('TodoCtrl', function($scope, TodoService) {
@@ -69,5 +85,8 @@
 		$scope.update = function (list, todo) {
 			TodoService.update(list, todo).then(function (data) {});
 		}
+	});
+
+	app.controller('SharedListCtrl', function($scope, $mdMedia, $mdDialog) {
 	});
 }());

@@ -79,6 +79,8 @@ mongodb.connect("mongodb://127.0.0.1:27017/nosql", function (err, db) {
         console.log(err);
     }
 
+
+
     var defaultUsers = [{
         _id: 1,
         username: 'admin',

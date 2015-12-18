@@ -41,4 +41,4 @@
   password:String
 }
 
-{ "_id" : req.param('_id') },{$push: {"todos": {"name" : req.param('name')}}}
+'work_backlog','private_backlog', 'shopping', 'daylist'
