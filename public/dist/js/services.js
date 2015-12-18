@@ -210,15 +210,13 @@
 
 		var update = function(task, todo) {
 			var deferred = $q.defer();
-
-			console.log(todo);
 			$http({
 				method: 'PUT',
 				url: apiPath,
 				params: {_id: task._id, _todoId: todo._id, done: todo.done, name: todo.name}
 			}).then(function(res) {
 				if (res.status === 200)
-					deferred.resolve(res.data);
+					deferred.resolve();
 				else
 					deferred.reject(res.status);
 			}, function(error, status) {
@@ -233,4 +231,4 @@
 		}
 	});
 
-	}());
+}());

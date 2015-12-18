@@ -20,11 +20,6 @@
 	app.controller('TasksCtrl', function($scope, $stateParams, TaskLists, TaskServices) {
 		var COLORS = ['amber', 'lightblue', 'lightyellow', 'green', 'red', 'white', 'purple'];
 
-		var randomColor = function() {
-			return (COLORS[~~(Math.random() * COLORS.length)]);
-		};
-
-
 		$scope.taskLists = TaskLists;
 		$scope.colors = COLORS;
 		$scope.isOpen = false;
@@ -60,14 +55,23 @@
 
 		$scope.addTodo = function (list) {
 			TodoService.add(list, $scope.todo).then(function (data) {
-				console.log(data);
-				list.todos.push(data);
+				list.todos.unshift(data);
+
+				// reset the used todo object
 				$scope.todo = {};
+				// hide the add todo input
+				$scope.showAddTodoInput = false;
+			}, function(error) {
+				console.log(error);
 			});
-		}
+		};
 
 		$scope.update = function (list, todo) {
-			TodoService.update(list, todo).then(function (data) {});
+			TodoService.update(list, todo).then(function() {
+				// updated
+			}, function(error) {
+				console.log(error);
+			});
 		}
 	});
 }());

@@ -15,7 +15,7 @@
 		<md-fab-speed-dial md-open="isOpen" md-direction="right" class="md-scale">
 			<md-fab-trigger>
 				<md-button aria-label="Color" class="md-fab md-mini md-warn {{taskList.color}}-background">
-					<md-icon md-font-set="material-icons"">color_lens</md-icon>
+					<md-icon md-font-set="material-icons">color_lens</md-icon>
 				</md-button>
 			</md-fab-trigger>
 			<md-fab-actions>
@@ -33,44 +33,35 @@
 			</md-grid-tile-header>
 
 			<div ng-controller="TodoCtrl">
-				<md-menu md-position-mode="target-right target" style="float: right">
-					<md-button aria-label="Open phone interactions menu" class="md-icon-button" ng-click="$mdOpenMenu($event);">
-						<md-icon md-font-set="material-icons">add_circle</md-icon>
+				<div class="btn-add-task">
+					<md-button class="md-mini md-icon-button" ng-click="showAddTodoInput = !showAddTodoInput">
+						<md-icon ng-if="!showAddTodoInput" md-font-set="material-icons">add_circle</md-icon>
+						<md-icon ng-if="showAddTodoInput" md-font-set="material-icons">close</md-icon>
 					</md-button>
-					<md-menu-content width="4">
-						<md-menu-item>
-							<form>
-								<md-input-container>
-									<label>Title</label>
-									<input required="required" ng-model="todo.name">
-								</md-input-container>
-							</form>
-						</md-menu-item>
-						<md-menu-item></md-menu-item>
-						<md-menu-item>
-							<md-button ng-click="addTodo(list)">
-								<md-icon class="md-mini md-primary" md-menu-align-target md-font-set="material-icons">add_circle</md-icon>
-								Add TODO
-							</md-button>
-						</md-menu-item>
-					</md-menu-content>
-				</md-menu>
-
+				</div>
 
 				<md-list ng-cloak>
+					<md-list-item class="add-task-input" ng-if="showAddTodoInput">
+						<form name="f_addTodo" novalidate class="full-width" ng-submit="addTodo(list);">
+							<md-input-container>
+								<input type="text" ng-model="todo.name" required>
+							</md-input-container>
+						</form>
+					</md-list-item>
+
 					<md-list-item ng-repeat="todo in list.todos | filter: {done: false}">
 						<md-checkbox ng-change="update(list, todo)" ng-model="todo.done" aria-label="Todo"></md-checkbox>
-						<p>{{todo.name}}</p>
+						<p ng-if="{'stroke-through': todo.done}">{{todo.name}}</p>
 					</md-list-item>
 				</md-list>
 
 				<md-list ng-cloak>
 					<md-list-item ng-click="showCheckedTodos = !showCheckedTodos">
-						{{showCheckedTodos == true? '-' : '+'}} Show finished todos
+						{{showCheckedTodos ? '-' : '+'}} Show finished todos
 					</md-list-item>
 					<md-list-item ng-if="showCheckedTodos" ng-repeat="todo in list.todos | filter: {done: true}">
 						<md-checkbox ng-change="update(list, todo)" ng-model="todo.done" aria-label="Todo"></md-checkbox>
-						<p>{{todo.name}}</p>
+						<p ng-if="{'stroke-through': todo.done}">{{todo.name}}</p>
 					</md-list-item>
 				</md-list>
 			</div>
