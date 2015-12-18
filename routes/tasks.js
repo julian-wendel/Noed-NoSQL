@@ -39,7 +39,6 @@ router.get('/', function (req, res, next) {
     });
 });
 
-//insert a todo task into database
 router.post('/', function (req, res, next) {
     if (req.query && req.query.name && req.query.public && req.query.color) {
         var task = req.query;
@@ -63,60 +62,10 @@ router.post('/', function (req, res, next) {
             }
         });
     }
-    else if (req.query && req.query.createDefaults) {
-        var defaultTasks = [
-            {
-                "name": "Daily",
-                "_id": uuid.v1(),
-                "todos": [],
-                "public": false,
-                "owner": [req.jwt.id],
-                "color": "lightblue"
-            },
-            {
-                "name": "Private Backlog",
-                "_id": uuid.v1(),
-                "todos": [],
-                "public": false,
-                "owner": [req.jwt.id],
-                "color": "lightblue"
-            },
-            {
-                "name": "Work Backlog",
-                "_id": uuid.v1(),
-                "todos": [],
-                "public": false,
-                "owner": [req.jwt.id],
-                "color": "lightblue"
-            },
-            {
-                "name": "Shopping",
-                "_id": uuid.v1(),
-                "todos": [],
-                "public": false,
-                "owner": [req.jwt.id],
-                "color": "lightblue"
-            }];
-        database.connect(conStr, function (err, db) {
-            if (!err) {
-                db.collection('tasks').insertMany(defaultTasks).then(function (result) {
-                    db.close();
-                    res.statusCode(200);
-                }, function (err) {
-                    db.close();
-                    res.sendStatus(404);
-                });
-            } else {
-                db.close();
-                res.sendStatus(500);
-            }
-        });
-    }
     else
         res.sendStatus(400);
 });
 
-//update item in database
 router.put('/', function (req, res, next) {
     if (req.query && req.query.id && req.query.name && req.query.public) {
         var task = req.query;
