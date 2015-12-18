@@ -9,11 +9,11 @@ var uuid = require('uuid');
 
 //Get items from database
 router.get('/', function(req, res, next) {
-    if (req.query && req.query.owner) {
+    if (req.query) {
         database.connect(conStr, function(err, db) {
             if(!err) {
                 console.log("We are connected");
-                db.collection("tasks").find({ owner: { $elemMatch: {$in:req.param('owner')}}}).toArray(function(err, result)
+                db.collection("tasks").find({ owner: req.jwt.id}).toArray(function(err, result)
                 {
                     if(err){
                         console.log(err);
@@ -59,9 +59,9 @@ router.get('/', function(req, res, next) {
 
 //insert a todo task into database
 router.post('/', function (req, res, next) {
-	if (req.query && req.query.owner && req.query.name && req.query.public && req.query.color) {
+	if (req.query && req.query.name && req.query.public && req.query.color) {
         var task = req.query;
-        task.owner = [req.query.owner];
+        task.owner = [req.jwt.id];
         task._id = uuid.v1();
         task.todos = [];
 		database.connect(conStr, function (err, db) {
@@ -84,19 +84,20 @@ router.post('/', function (req, res, next) {
 			}
 		});
 	} else
-		res.sendStatus(400)
+		res.sendStatus(400);
 });
 
 //update item in database
 router.put('/', function(req, res, next) {
-    if(req.query && req.param('_id') && req.param('name') && req.param('public') && req.param('owner')){
+    if(req.query && req.param('_id') && req.param('name') && req.param('public')){
         database.connect(conStr, function(err, db) {
             if(!err) {
                 console.log("We are connected");
                 var updateOwner = false;
                 var task = db.collection('tasks').find({"_id":req.param('_id')}).toArray();
-                if(task.owner.indexOf(req.param('owner')) == -1)
+                if(task.owner.indexOf(req.jwt.id) == -1)
                     updateOwner = true;
+
                 if(updateOwner) {
                     db.collection('tasks').updateOne(
                         {"_id": req.param('_id')},
@@ -106,7 +107,7 @@ router.put('/', function(req, res, next) {
                                 "public": req.param('public')
                             },
                             $push: {
-                                "owner": req.param('owner')
+                                "owner": req.jwt.id
                             }
                         }, function (err, results) {
                             console.log(results);

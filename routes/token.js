@@ -53,7 +53,7 @@ function createToken(args){
             username: args.user.username,
             role: args.user.role
         }, privateKey, {expiresIn: "1h"}, function createToken(token) {
-            resolve(token);
+            resolve({token: token});
         });
     });
 }
@@ -70,8 +70,8 @@ router.post('/', function(req, res) {
         .then(findUser)
         .then(comparePassword)
         .then(createToken)
-        .then(function(token){
-            res.json({token: token});
+        .then(function(data){
+            res.json(data);
         })
         .catch(function(error){
             console.log(error.err);

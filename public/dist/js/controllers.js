@@ -7,15 +7,14 @@
 
 	app.controller('LoginCtrl', function ($scope, UserService) {
 		$scope.user = {};
-		/*$scope.login = function(user) {
+		$scope.login = function(user) {
 			UserService.login(user).then(function (res) {
 				UserService.setAuthHeader(res.data.token);
-				$scope.navigateTo('tasks', {userId: 1}); // replace with res.data.id
+				$scope.navigateTo('tasks', {userId: 1});
 			}, function (err) {
 				console.error(err);
 			});
-		}*/
-		$scope.navigateTo('tasks', {userId: 1});
+		}
 	});
 
 	app.controller('TasksCtrl', function($scope, $stateParams, TaskLists, TaskServices) {
@@ -33,7 +32,7 @@
 		$scope.taskList = {}; // object for new task list
 		// default values
 		$scope.taskList.public = false;
-		$scope.taskList.color = '';
+		$scope.taskList.color = 'amber';
 
 
 		$scope.setColor = function(color) {

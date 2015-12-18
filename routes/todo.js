@@ -7,29 +7,31 @@ var database = require('mongodb').MongoClient;
 var conStr = "mongodb://127.0.0.1:27017/nosql";
 var uuid = require('uuid');
 //Get items from database
-router.get('/', function(req, res, next) {
-    if(req.query && req.param('_id') && req.param('_todoId')){
-        database.connect(conStr, function(err, db) {
-            if(!err) {
+router.get('/', function (req, res, next) {
+    if (req.query && req.param('_id') && req.param('_todoId')) {
+        database.connect(conStr, function (err, db) {
+            if (!err) {
                 console.log("We are connected");
-				db.collection('tasks').find({"_id":req.param('_id')},{todos: { $elemMatch: { "_id":req.param('_todoId')}}}).toArray(function(err, result)
-                {
-                    if(err){
+                db.collection('tasks').find({
+                    "_id": req.param('_id'),
+                    "owner": req.jwt.id
+                }, {todos: {$elemMatch: {"_id": req.param('_todoId')}}}).toArray(function (err, result) {
+                    if (err) {
                         console.log(err);
                         db.close();
                         res.sendStatus(404);
                     }
-                    else{
+                    else {
                         db.close();
                         res.send(result);
                     }
                 });
 
             } else {
-				// error connecting to database
+                // error connecting to database
                 console.log(err);
-				res.sendStatus(500);
-				db.close();
+                res.sendStatus(500);
+                db.close();
             }
         });
     }
@@ -38,40 +40,43 @@ router.get('/', function(req, res, next) {
 });
 
 //insert item into database
-router.post('/', function(req, res, next) {
-    if(req.query && req.param('_id') && req.param('name')){
+router.post('/', function (req, res, next) {
+    if (req.query && req.param('_id') && req.param('name')) {
         var todo = {
             name: req.param('name'),
             done: false,
             _id: uuid.v1()
         };
 
-        database.connect(conStr, function(err, db) {
-            if(!err) {
+        database.connect(conStr, function (err, db) {
+            if (!err) {
                 console.log("We are connected");
-                    if(!err) {
-                        //TODO int parsing
-                        db.collection('tasks').updateOne(
-                        { "_id" : req.param('_id') },
+                if (!err) {
+                    //TODO int parsing
+                    db.collection('tasks').updateOne(
+                        {
+                            "_id": req.param('_id'),
+                            "owner": req.jwt.id
+                        },
                         {
                             $push: {
                                 todos: todo
                             }
-                        }, function(err, result) {
+                        }, function (err, result) {
                             //assert.equal(err, null);
                             console.log("Todo successfully added to TaskList ");
-                                console.log(result);
+                            console.log(result);
                             db.close();
                             res.json(todo);
                         });
-                    }
-                    else{
-                        console.log(err);
-                        db.close();
-                        res.sendStatus(500);
-                    }
+                }
+                else {
+                    console.log(err);
+                    db.close();
+                    res.sendStatus(500);
+                }
             }
-            else{
+            else {
                 console.log(err);
             }
         });
@@ -81,25 +86,25 @@ router.post('/', function(req, res, next) {
 });
 
 //update item in database
-router.put('/', function(req, res, next) {
-    if(req.query && req.param('_id') && req.param('_todoId') && req.param('name') && req.param('done')){
-        database.connect(conStr, function(err, db) {
-            if(!err) {
+router.put('/', function (req, res, next) {
+    if (req.query && req.param('_id') && req.param('_todoId') && req.param('name') && req.param('done')) {
+        database.connect(conStr, function (err, db) {
+            if (!err) {
                 console.log("We are connected");
                 db.collection('tasks').updateOne(
-                    { "_id" : req.param('_id'), "todos._id" : req.param('_todoId') },
+                    {"_id": req.param('_id'), "owner": req.jwt.id, "todos._id": req.param('_todoId')},
                     {
                         $set: {
                             "todos.$.name": req.param('name'),
                             "todos.$.done": 'true' == req.param('done')
                         }
-                    }, function(err, results) {
+                    }, function (err, results) {
                         console.log(results);
                         db.close();
                         res.sendStatus(200);
                     });
             }
-            else{
+            else {
                 console.log(err);
                 db.close();
                 res.sendStatus(500);
@@ -111,26 +116,29 @@ router.put('/', function(req, res, next) {
 });
 
 //delete item from database
-router.delete('/', function(req, res, next) {
+router.delete('/', function (req, res, next) {
     //delete single item
-    if(req.query && req.param('_id') && req.param('_todoId')){
-        database.connect(conStr, function(err, db) {
-            if(!err) {
+    if (req.query && req.param('_id') && req.param('_todoId')) {
+        database.connect(conStr, function (err, db) {
+            if (!err) {
                 console.log("We are connected");
                 db.collection('tasks').updateOne(
-                    { "_id": req.param('_id') },
+                    {
+                        "_id": req.param('_id'),
+                        "owner": req.jwt.id
+                    },
                     {
                         $pull: {
                             'todos': {'_id': req.param('_todoId')}
                         }
                     },
-                    function(err, results) {
+                    function (err, results) {
                         console.log(results);
                         res.json(result);
                     }
                 );
             }
-            else{
+            else {
                 console.log(err);
                 db.close();
                 res.sendStatus(500);
@@ -138,22 +146,22 @@ router.delete('/', function(req, res, next) {
         });
     }
     //delete all items in task
-    else if (req.query && req.param('_id')){
-        database.connect(conStr, function(err, db) {
-            if(!err) {
+    else if (req.query && req.param('_id')) {
+        database.connect(conStr, function (err, db) {
+            if (!err) {
                 console.log("We are connected");
                 db.collection('tasks').updateOne(
-                    { "_id": req.param('_id') },
+                    {"_id": req.param('_id')},
                     {
-                        $pullAll: {'todos':[]}
+                        $pullAll: {'todos': []}
                     },
-                    function(err, results) {
+                    function (err, results) {
                         console.log(results);
                         res.send(callback());
                     }
                 );
             }
-            else{
+            else {
                 console.log(err);
                 db.close();
                 res.sendStatus(500);
