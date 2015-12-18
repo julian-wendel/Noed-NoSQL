@@ -24,7 +24,7 @@
 
 <md-content flex>
     <md-grid-list md-row-height-gt-md="4:4" md-row-height="2:2" md-cols-sm="1" md-cols-md="2" md-cols-gt-md="5" md-gutter="12px" md-gutter-gt-sm="8px" >
-        <md-grid-tile ng-repeat="list in taskLists | orderBy: list.todos.length" class="{{list.color || 'gray'}}-background" class="md-whiteframe-5dp" md-rowspan="1" md-colspan="1" md-colspan-sm="1">
+        <md-grid-tile ng-repeat="list in taskLists | orderBy: list.todos.length" class="{{list.color || 'gray'}}-background" class="md-whiteframe-5dp" md-rowspan="2" md-colspan="1" md-colspan-sm="1">
 			<md-grid-tile-header>
 				<h3>{{list.name}}</h3>
 			</md-grid-tile-header>
@@ -55,7 +55,17 @@
 
 
 				<md-list ng-cloak>
-					<md-list-item ng-repeat="todo in list.todos">
+					<md-list-item ng-repeat="todo in list.todos | filter: {done: false}">
+						<md-checkbox ng-change="update(list, todo)" ng-model="todo.done" aria-label="Todo"></md-checkbox>
+						<p>{{todo.name}}</p>
+					</md-list-item>
+				</md-list>
+
+				<md-list ng-cloak>
+					<md-list-item ng-click="showCheckedTodos = !showCheckedTodos">
+						{{showCheckedTodos == true? '-' : '+'}} Show finished todos
+					</md-list-item>
+					<md-list-item ng-if="showCheckedTodos" ng-repeat="todo in list.todos | filter: {done: true}">
 						<md-checkbox ng-change="update(list, todo)" ng-model="todo.done" aria-label="Todo"></md-checkbox>
 						<p>{{todo.name}}</p>
 					</md-list-item>

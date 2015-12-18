@@ -57,6 +57,7 @@
 
 	app.controller('TodoCtrl', function($scope, TodoService) {
 		$scope.todo = {};
+		$scope.showCheckedTodos = false;
 
 		$scope.addTodo = function (list) {
 			TodoService.add(list, $scope.todo).then(function (data) {
