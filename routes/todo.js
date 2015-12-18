@@ -34,7 +34,6 @@ router.get('/', function (req, res, next) {
         res.sendStatus(400);
 });
 
-//insert item into database
 router.post('/', function (req, res, next) {
     if (req.query && req.query._id && req.query.name) {
         var todo = {
@@ -75,7 +74,6 @@ router.post('/', function (req, res, next) {
         res.sendStatus(400)
 });
 
-//update item in database
 router.put('/', function (req, res, next) {
     if (req.query && req.query._id && req.query._todoId && req.query.name && req.query.done) {
         database.connect(conStr, function (err, db) {
