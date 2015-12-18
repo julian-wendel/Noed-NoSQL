@@ -128,7 +128,7 @@
 			$http({
 				method: 'PUT',
 				url: apiPath,
-				params: {id: task.id, name:task.name, public:task.public}
+				params: {id: task.id, name:task.name, public:task.public, release:false} //TODO relese parameter to drop shared list
 			}).then(function(res) {
 				if (res.status === 201)
 					deferred.resolve();

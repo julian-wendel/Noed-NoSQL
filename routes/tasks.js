@@ -77,23 +77,42 @@ router.put('/', function (req, res, next) {
                 var task = db.collection('tasks').find({"_id": req.query.id}).toArray();
                 if (task.owner.indexOf(req.jwt.id) == -1)
                     updateOwner = true;
-
                 if (updateOwner) {
-                    db.collection('tasks').updateOne(
-                        {"_id": req.param('_id')},
-                        {
-                            $set: {
-                                "name": req.query.name,
-                                "public": req.query.public
-                            },
-                            $push: {
-                                "owner": req.jwt.id
-                            }
-                        }, function (err, results) {
-                            db.close();
-                            task.owner.add(req.jwt.id);
-                            res.send(task);
-                        });
+                    if(req.query.release)
+                    {
+                        db.collection('tasks').updateOne(
+                            {"_id": req.param('_id')},
+                            {
+                                $set: {
+                                    "name": req.query.name,
+                                    "public": req.query.public
+                                },
+                                $pull: {
+                                    "owner": req.jwt.id
+                                }
+                            }, function (err, results) {
+                                db.close();
+                                task.owner.add(req.jwt.id);
+                                res.send(task);
+                            });
+                    }
+                    else {
+                        db.collection('tasks').updateOne(
+                            {"_id": req.param('_id')},
+                            {
+                                $set: {
+                                    "name": req.query.name,
+                                    "public": req.query.public
+                                },
+                                $push: {
+                                    "owner": req.jwt.id
+                                }
+                            }, function (err, results) {
+                                db.close();
+                                task.owner.add(req.jwt.id);
+                                res.send(task);
+                            });
+                    }
                 }
                 else {
                     db.collection('tasks').updateOne(
