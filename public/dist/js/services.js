@@ -48,15 +48,40 @@
 			return deferred.promise;
 		};
 
+        var addDefaults = function(createDefaults) {
+            var deferred = $q.defer();
+
+            $http({
+                method: 'POST',
+                url: apiPath,
+                params: createDefaults
+            }).then(function(res) {
+                if (res.status === 200)
+                    deferred.resolve(res.data);
+                else
+                    deferred.reject(res.status);
+            }, function(error, status) {
+                deferred.reject(status);
+            });
+            return deferred.promise;
+        };
+
 		var all = function(userId) {
 			var deferred = $q.defer();
 
 			$http({
 				method: 'GET',
-				url: apiPath,
+				url: apiPath
 			}).then(function(res) {
-				if (res.status === 200)
-					deferred.resolve(res.data);
+				if (res.status === 200) {
+                    if(res.data.isEmpty()){
+                        addDefaults({createDefaults:true});
+                        return all(userId);
+                    }
+                    else {
+                        deferred.resolve(res.data);
+                    }
+                }
 				else
 					deferred.reject(res.status);
 			}, function(error, status) {
@@ -128,7 +153,7 @@
 			$http({
 				method: 'PUT',
 				url: apiPath,
-				params: {id: task.id, name:task.name, public:task.public}
+				params: {id: task.id, name:task.name, public:task.public, release:false} //TODO relese parameter to drop shared list
 			}).then(function(res) {
 				if (res.status === 201)
 					deferred.resolve();
@@ -183,6 +208,7 @@
 			//queryTodos: queryTodos,
 			update: update,
 			remove: remove,
+            addDefaults : addDefaults,
 			//getTaskById: getTaskById,
 			getAllPublicTasks: getAllPublicTasks
 		}
@@ -210,15 +236,13 @@
 
 		var update = function(task, todo) {
 			var deferred = $q.defer();
-
-			console.log(todo);
 			$http({
 				method: 'PUT',
 				url: apiPath,
 				params: {_id: task._id, _todoId: todo._id, done: todo.done, name: todo.name}
 			}).then(function(res) {
 				if (res.status === 200)
-					deferred.resolve(res.data);
+					deferred.resolve();
 				else
 					deferred.reject(res.status);
 			}, function(error, status) {
@@ -233,4 +257,4 @@
 		}
 	});
 
-	}());
+}());
