@@ -5,8 +5,9 @@
 (function() {
 	'use strict';
 
-	app.controller('LoginCtrl', function ($scope, UserService) {
+	app.controller('LoginCtrl', function ($rootScope, $scope, UserService) {
 		$scope.user = {};
+
 		$scope.login = function(user) {
 			UserService.login(user).then(function (res) {
 				UserService.setAuthHeader(res.data.token);
@@ -52,6 +53,7 @@
 			var useFullScreen = ($mdMedia('sm') || $mdMedia('xs'));
 
 			$mdDialog.show({
+				controller: 'SharedListCtrl',
 				templateUrl: 'views/tasks.shared.html',
 				parent: angular.element(document.body),
 				targetEvent: ev,
@@ -65,7 +67,7 @@
 		}
 	});
 
-	app.controller('TodoCtrl', function($scope, TodoService) {
+	app.controller('TodoCtrl', function($scope, $timeout, TodoService) {
 		$scope.todo = {};
 		$scope.showCheckedTodos = false;
 
@@ -91,6 +93,16 @@
 		}
 	});
 
-	app.controller('SharedListCtrl', function($scope, $mdMedia, $mdDialog) {
+	app.controller('SharedListCtrl', function($rootScope, $scope, $mdMedia, $mdDialog, TaskServices) {
+		$scope.user = $rootScope.user;
+		$scope.publicTasks = [];
+		TaskServices.getAllPublicTasks().then(function(data){
+			$scope.publicTasks = data;
+		});
+
+
+		$scope.cancel = function() {
+			$mdDialog.cancel();
+		};
 	});
 }());

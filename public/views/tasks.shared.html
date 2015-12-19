@@ -11,16 +11,20 @@
         </md-toolbar>
 
         <md-dialog-content>
-            <div class="md-dialog-content">
-                <h2>Shared Lists</h2>
-            </div>
+            <md-list ng-cloak>
+                <md-list-item ng-repeat="task in publicTasks">
+                    <md-checkbox ng-init="task.acquire = task.owner.indexOf(user.id) != '-1'" ng-model="task.acquire" aria-label="Todo"></md-checkbox>
+                    <p>{{task.name}}</p>
+                </md-list-item>
+            </md-list>
         </md-dialog-content>
 
-        <md-dialog-actions layout="row">
+        <div class="md-actions">
+            <span flex></span>
             <md-button>
                 Save
             </md-button>
-        </md-dialog-actions>
+        </div>
     </form>
 </md-dialog>
 

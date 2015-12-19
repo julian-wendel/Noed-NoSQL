@@ -6,6 +6,43 @@ var mongodb = require('mongodb').MongoClient;
 var uuid = require('uuid');
 
 var conStr = "mongodb://127.0.0.1:27017/nosql";
+var defaultTasksName = ['Daily', 'Private Backlog', 'Work Backlog', 'Shopping'];
+
+(function addDefaultUsers(){
+    var req = {};
+    req.body = {};
+
+    var defaultUsers = [{
+        _id: 1,
+        username: 'admin',
+        password: 'admin',
+        role: 'ADMIN',
+        name: 'Istrator',
+        firstName: 'Admin'
+    },
+        {
+            _id: 2,
+            username: 'test',
+            password: 'admin',
+            role: 'USER',
+            name: 'Kraus',
+            firstName: 'Martina'
+        }];
+
+    for(var index in defaultUsers){
+        var req = {};
+        req.body = defaultUsers[index];
+
+        connectToDB(req)
+            .then(createUserFromReq)
+            .then(hashPassword)
+            .then(storeUser)
+            .then(addDefaultTasks)
+            .catch(function (err) {
+                console.log(err);
+            });
+    }
+})();
 
 function connectToDB(req) {
     return new Promise(function (resolve, reject) {
@@ -55,6 +92,7 @@ function findOneUser(args) {
 function createUserFromReq(args) {
     return new Promise(function (resolve, reject) {
         var user = {};
+        user._id = uuid.v1();
         user.username = args.req.body.username;
         user.name = args.req.body.name;
         user.firstName = args.req.body.firstName;
@@ -86,59 +124,36 @@ function hashPassword(args) {
 }
 
 function storeUser(args) {
-    args.user._id = uuid.v1();
     return new Promise(function (resolve, reject) {
-        args.db.collection('users').insertOne(args.user, {}, function (err, result) {
+        args.db.collection('users').findOneAndUpdate({username: args.user.username}, {$setOnInsert: args.user}, {upsert: true}, function (err, result) {
+            console.log(result);
             if (err)
                 reject({status: 400, err: err});
             else
-                resolve({db: args.db, user: result});
+                resolve(args);
         });
     });
 }
 
 function addDefaultTasks(args) {
-    console.log(args.user.ops[0]._id);
-    var defaultTasks = [
-        {
-            "name": "Daily",
-            "_id": uuid.v1(),
-            "todos": [],
-            "public": false,
-            "owner": [args.user.ops[0]._id],
-            "color": "lightblue"
-        },
-        {
-            "name": "Private Backlog",
-            "_id": uuid.v1(),
-            "todos": [],
-            "public": false,
-            "owner": [args.user.ops[0]._id],
-            "color": "lightblue"
-        },
-        {
-            "name": "Work Backlog",
-            "_id": uuid.v1(),
-            "todos": [],
-            "public": false,
-            "owner": [args.user.ops[0]._id],
-            "color": "lightblue"
-        },
-        {
-            "name": "Shopping",
-            "_id": uuid.v1(),
-            "todos": [],
-            "public": false,
-            "owner": [args.user.ops[0]._id],
-            "color": "lightblue"
-        }];
-
     return new Promise(function (resolve, reject) {
+        var defaultTasks = [];
+
+        for (var i = 0; i < defaultTasksName.length; i++) {
+            defaultTasks.push({
+                _id: uuid.v1(),
+                name: defaultTasksName[i],
+                todos: [],
+                owner: [args.user._id],
+                color: 'lightblue'
+            });
+        }
+
         args.db.collection('tasks').insertMany(defaultTasks, function (err, result) {
             if (err)
                 reject({status: 400, err: err});
             else
-                resolve(result);
+                resolve(args);
         });
     });
 }
@@ -184,8 +199,8 @@ router.post('/', function (req, res, next) {
         .then(hashPassword)
         .then(storeUser)
         .then(addDefaultTasks)
-        .then(function (user) {
-            res.json(user);
+        .then(function (args) {
+            res.json(args.default.user.ops[0]);
         })
         .catch(function (err) {
             console.log(err);

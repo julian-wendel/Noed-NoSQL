@@ -4,7 +4,7 @@
 
 'use strict';
 
-var app = angular.module('NoedSQL', ['ngMaterial', 'ngMessages', 'ui.router']);
+var app = angular.module('NoedSQL', ['ngMaterial', 'ngMessages', 'ui.router', 'angular-jwt']);
 
 app.run(function($rootScope, $state) {
 	/**
@@ -18,7 +18,7 @@ app.run(function($rootScope, $state) {
 	};
 });
 
-app.config(function($stateProvider, $urlRouterProvider) {
+app.config(function($stateProvider, $urlRouterProvider, $httpProvider) {
     $stateProvider
         .state('login', {
             url: "/login",
@@ -37,5 +37,6 @@ app.config(function($stateProvider, $urlRouterProvider) {
             controller: 'TasksCtrl'
         });
 
-	$urlRouterProvider.otherwise("/login");
+    $urlRouterProvider.otherwise("/tasks");
+    $httpProvider.interceptors.push('AuthInterceptor');
 });

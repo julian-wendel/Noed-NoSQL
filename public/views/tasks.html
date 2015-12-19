@@ -51,7 +51,7 @@
 					</md-list-item>
 
 					<md-list-item ng-repeat="todo in list.todos | filter: {done: false}">
-						<md-checkbox ng-change="update(list, todo)" ng-model="todo.done" aria-label="Todo"></md-checkbox>
+						<md-checkbox ng-change="update(list, todo)" ng-changed="console.log(changed);" ng-model="todo.done" aria-label="Todo"></md-checkbox>
 						<p ng-if="{'stroke-through': todo.done}">{{todo.name}}</p>
 					</md-list-item>
 				</md-list>

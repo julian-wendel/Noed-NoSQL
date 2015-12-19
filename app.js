@@ -74,33 +74,4 @@ app.use(function (err, req, res, next) {
     });
 });
 
-mongodb.connect("mongodb://127.0.0.1:27017/nosql", function (err, db) {
-    if (err) {
-        console.log(err);
-    }
-
-
-
-    var defaultUsers = [{
-        _id: 1,
-        username: 'admin',
-        password: '$2a$10$qm1BdSO63MKMMBdMAKLhm.NW.EnG/VwBc9Mxep5kFxGElwOIzBDXy',
-        role: 'ADMIN',
-        name: 'Istrator',
-        firstName: 'Admin'
-    },
-    {
-        _id: 2,
-        username: 'test',
-        password: '$2a$10$qm1BdSO63MKMMBdMAKLhm.NW.EnG/VwBc9Mxep5kFxGElwOIzBDXy',
-        role: 'USER',
-        name: 'Kraus',
-        firstName: 'Martina'
-    }];
-
-    db.collection('users').insertMany(defaultUsers, function (err, data) {
-        db.close();
-    });
-});
-
 module.exports = app;

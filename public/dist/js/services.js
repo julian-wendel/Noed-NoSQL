@@ -5,10 +5,30 @@
 (function () {
     'use strict';
 
+    app.factory('AuthInterceptor', function($rootScope, $q, jwtHelper) {
+        return {
+            'request': function (config) {
+                console.log(config);
+                if(localStorage.getItem('token'))
+                    config.headers['x-auth-token'] = localStorage.getItem('token');
+
+                if(!$rootScope.user)
+                    $rootScope.user = jwtHelper.decodeToken(localStorage.getItem('token'));
+
+                return config;
+            },
+            'responseError': function (rejection) {
+                if(rejection.status == '401')
+                    $rootScope.navigateTo('login');
+                return $q.reject(rejection);
+            }
+        }
+    });
+
     app.factory('UserService', ['$q', '$http', function ($q, $http) {
         return {
             setAuthHeader: function (token) {
-                $http.defaults.headers.common['X-Auth-Token'] = token;
+                localStorage.setItem('token', token);
             },
 
             login: function (data) {
@@ -90,7 +110,7 @@
             $http({
                 method: 'GET',
                 url: apiPath,
-                params: {public: task.public}
+                params: {public: true}
             }).then(function (res) {
                 if (res.status === 200)
                     deferred.resolve(res.data);
