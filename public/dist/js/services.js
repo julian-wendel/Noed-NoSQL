@@ -5,6 +5,7 @@
 (function () {
     'use strict';
 
+	// TODO rewrite the interceptor (current it causes problem if local storage is empty), add sign up, assign user on signing in
     app.factory('AuthInterceptor', function($rootScope, $q, jwtHelper) {
         return {
             'request': function (config) {
@@ -38,12 +39,29 @@
                     url: '/api/token',
                     data: data
                 }).then(function (response) {
-                    $d.resolve(response);
+                    if (response.status === 200)
+                    	$d.resolve(response);
+					else
+						$d.reject(response.status);
                 }, function (error) {
-                    $d.reject(error.message);
+                    $d.reject(error);
                 });
                 return $d.promise;
-            }
+            },
+
+			all: function() {
+				var deferred = $q.defer();
+
+				$http.get('/api/users').then(function (res) {
+					if (res.status === 200)
+						deferred.resolve(res.data);
+					else
+						deferred.reject(res.status);
+				}, function (error, status) {
+					deferred.reject(status);
+				});
+				return deferred.promise;
+			}
         }
     }]);
 
@@ -68,13 +86,10 @@
             return deferred.promise;
         };
 
-        var all = function (userId) {
+        var all = function () {
             var deferred = $q.defer();
 
-            $http({
-                method: 'GET',
-                url: apiPath
-            }).then(function (res) {
+            $http.get(apiPath).then(function (res) {
                 if (res.status === 200) {
                     deferred.resolve(res.data);
                 }
@@ -143,15 +158,15 @@
          return deferred.promise;
          };*/
 
-        var update = function (task) {
+        var update = function (list) {
             var deferred = $q.defer();
 
             $http({
                 method: 'PUT',
                 url: apiPath,
-                params: {id: task.id, name: task.name, public: task.public, release: false} //TODO relese parameter to drop shared list
+                params: {id: list._id, name: list.name, public: list.public, release: false} //TODO relese parameter to drop shared list
             }).then(function (res) {
-                if (res.status === 201)
+				if (res.status === 200)
                     deferred.resolve();
                 else
                     deferred.reject(res.status);
@@ -162,31 +177,13 @@
             return deferred.promise;
         };
 
-        var remove = function (task) {
+        var remove = function (list) {
             var deferred = $q.defer();
 
             $http({
                 method: 'DELETE',
                 url: apiPath,
-                params: {id: task.id}
-            }).then(function (res) {
-                if (res.status === 200)
-                    deferred.resolve();
-                else
-                    deferred.reject(res.status);
-            }, function (error, status) {
-                deferred.reject(status);
-            });
-            return deferred.promise;
-        };
-
-        var addTodo = function (task, todo) {
-            var deferred = $q.defer();
-
-            $http({
-                method: 'DELETE',
-                url: apiPath,
-                params: {_id: task.id, name: todo.name}
+                params: {id: list._id}
             }).then(function (res) {
                 if (res.status === 200)
                     deferred.resolve();
@@ -246,9 +243,27 @@
             return deferred.promise;
         };
 
+		var remove = function (list, todo) {
+			var deferred = $q.defer();
+			$http({
+				method: 'DELETE',
+				url: apiPath,
+				params: {_id: list._id, _todoId: todo._id}
+			}).then(function (res) {
+				if (res.status === 200)
+					deferred.resolve();
+				else
+					deferred.reject(res.status);
+			}, function (error, status) {
+				deferred.reject(status);
+			});
+			return deferred.promise;
+		};
+
         return {
             add: add,
-            update: update
+            update: update,
+			remove: remove
         }
     });
 

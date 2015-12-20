@@ -1,18 +1,20 @@
 <div class="toolbar" layout="column"><!-- layout-margin layout-align="center center"-->
 	<form name="todoForm" novalidate class="input-holder md-whiteframe-3dp" layout="row" layout-align="center center" flex="100" flex-gt-md="45">
 		<input type="text" flex="80" placeholder="Add new task" ng-model="taskList.name" required>
-		<md-button class="md-icon-button md-primary text-right" flex aria-label="Add task" ng-disabled="todoForm.$invalid" ng-click="add(taskList);">
+		<md-button class="md-icon-button md-primary text-right" flex aria-label="Add a task list" ng-disabled="todoForm.$invalid" ng-click="add(taskList);">
 			<md-icon md-font-set="material-icons">add_circle</md-icon>
 		</md-button>
 
-		<md-button class="md-icon-button md-primary text-right" flex aria-label="Shared Lists" ng-click="showSharedListsDialog()">
-			<md-icon md-font-set="material-icons">group</md-icon>
+		<md-button class="md-icon-button md-primary text-left" flex aria-label="Shared Lists" ng-click="showSharedListsDialog()">
+			<md-tooltip md-direction="bottom">Shared lists</md-tooltip>
+			<md-icon md-font-set="material-icons">share</md-icon>
 		</md-button>
 	</form>
 
 	<div layout="row" class="color-picker">
-		<md-checkbox class="md-warn md-hue-3" ng-model="taskList.public" aria-label="Public">Public</md-checkbox>
+		<md-checkbox class="md-primary md-hue-3" ng-model="taskList.public" aria-label="Public">Public</md-checkbox>
 
+		<!-- color picker -->
 		<md-fab-speed-dial md-open="isOpen" md-direction="right" class="md-scale">
 			<md-fab-trigger>
 				<md-button aria-label="Color" class="md-fab md-mini md-warn {{taskList.color}}-background">
@@ -27,7 +29,10 @@
 </div>
 
 <md-content flex>
-    <md-grid-list md-row-height-gt-md="4:4" md-row-height="2:2" md-cols-sm="1" md-cols-md="2" md-cols-gt-md="5" md-gutter="12px" md-gutter-gt-sm="8px" >
+	<div ng-if="showLoading" layout="row" layout-sm="column" layout-align="center center">
+		<md-progress-circular class="md-hue-3" md-mode="indeterminate" md-diameter="40"></md-progress-circular>
+	</div>
+    <md-grid-list ng-if="!showLoading" md-row-height-gt-md="4:4" md-row-height="2:2" md-cols-sm="1" md-cols-md="2" md-cols-gt-md="5" md-gutter="12px" md-gutter-gt-sm="8px" >
         <md-grid-tile ng-repeat="list in taskLists | orderBy: list.todos.length" class="{{list.color || 'gray'}}-background" class="md-whiteframe-5dp" md-rowspan="2" md-colspan="1" md-colspan-sm="1">
 			<md-grid-tile-header>
 				<h3>{{list.name}}</h3>
@@ -36,39 +41,59 @@
 			<div ng-controller="TodoCtrl">
 				<div class="btn-add-task">
 					<md-button class="md-mini md-icon-button" ng-click="showAddTodoInput = !showAddTodoInput">
-						<md-icon ng-if="!showAddTodoInput" md-font-set="material-icons">add_circle</md-icon>
-						<md-icon ng-if="showAddTodoInput" md-font-set="material-icons">close</md-icon>
+						<md-icon class="rotate rotate-45" ng-class="showAddTodoInput ? 'on' : 'off'" md-font-set="material-icons">add_circle</md-icon>
 					</md-button>
 				</div>
 
-				<md-list ng-cloak>
+				<md-list class="todo-active" ng-cloak>
 					<md-list-item class="add-task-input" ng-if="showAddTodoInput">
 						<form name="f_addTodo" novalidate class="full-width" ng-submit="addTodo(list);">
 							<md-input-container>
-								<input type="text" ng-model="todo.name" required>
+								<input type="text" ng-model="todo.name" aria-label="Todo name" required>
 							</md-input-container>
 						</form>
 					</md-list-item>
 
-					<md-list-item ng-repeat="todo in list.todos | filter: {done: false}">
-						<md-checkbox ng-change="update(list, todo)" ng-changed="console.log(changed);" ng-model="todo.done" aria-label="Todo"></md-checkbox>
-						<p ng-if="{'stroke-through': todo.done}">{{todo.name}}</p>
+					<md-list-item class="todos" ng-repeat="todo in list.todos | filter: {done: false}">
+						<md-checkbox class="md-primary" ng-change="update(list, todo)" ng-model="todo.done" aria-label="Todo"></md-checkbox>
+						<p ng-class="{'stroke-through': todo.done}">{{todo.name}}</p>
 					</md-list-item>
 				</md-list>
 
-				<md-list ng-cloak>
+				<!-- finished todos -->
+				<md-list class="todo-inactive" ng-if="list.todos.length > 0" ng-cloak>
 					<md-list-item ng-click="showCheckedTodos = !showCheckedTodos">
-						{{showCheckedTodos ? '-' : '+'}} Show finished todos
+						<md-icon class="material-icons rotate rotate-180" ng-class="showCheckedTodos ? 'on' : 'off'">keyboard_arrow_down</md-icon>
+						<p>Finished todos</p>
 					</md-list-item>
-					<md-list-item ng-if="showCheckedTodos" ng-repeat="todo in list.todos | filter: {done: true}">
-						<md-checkbox ng-change="update(list, todo)" ng-model="todo.done" aria-label="Todo"></md-checkbox>
-						<p ng-if="{'stroke-through': todo.done}">{{todo.name}}</p>
+					<md-list-item class="todos" ng-if="showCheckedTodos" ng-repeat="todo in list.todos | filter: {done: true}">
+						<md-checkbox class="md-primary" ng-change="update(list, todo)" ng-model="todo.done" aria-label="Todo"></md-checkbox>
+						<p ng-class="{'stroke-through': todo.done}">{{todo.name}}</p>
+						<md-button class="md-icon-button md-mini" ng-click="delete(list, todo);">
+							<md-icon md-font-set="material-icons">delete</md-icon>
+						</md-button>
 					</md-list-item>
 				</md-list>
 			</div>
 
-			<md-grid-tile-footer ng-if="list.public">
-                <h3>Public</h3>
+			<md-grid-tile-footer>
+				<!-- own list -> shows private/public -->
+				<md-list ng-if="list.owner[0] == user.id" class="m-t-0" ng-cloak>
+					<md-list-item>
+						<p ng-bind="list.public ? 'Public' : 'Private'"></p>
+						<md-switch class="m-r-0" ng-model="list.public" aria-label="Public list" ng-change="update(list)">
+					</md-list-item>
+				</md-list>
+
+				<!-- shared list -->
+				<md-list ng-if="list.owner[0] != user.id" class="m-t-0" ng-cloak>
+					<md-list-item>
+						<md-button class="md-fab md-mini md-icon-button shared-list-avatar" aria-label="List shared from {{user.username}}">
+							<md-icon md-font-set="material-icons">person</md-icon>
+							<md-tooltip md-direction="top">{{user.username}}</md-tooltip>
+						</md-button>
+					</md-list-item>
+				</md-list>
             </md-grid-tile-footer>
         </md-grid-tile>
     </md-grid-list>

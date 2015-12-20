@@ -8,18 +8,16 @@ var uuid = require('uuid');
 var conStr = "mongodb://127.0.0.1:27017/nosql";
 var defaultTasksName = ['Daily', 'Private Backlog', 'Work Backlog', 'Shopping'];
 
-(function addDefaultUsers(){
-    var req = {};
-    req.body = {};
-
-    var defaultUsers = [{
-        _id: 1,
-        username: 'admin',
-        password: 'admin',
-        role: 'ADMIN',
-        name: 'Istrator',
-        firstName: 'Admin'
-    },
+(function addDefaultUsers() {
+    var defaultUsers = [
+		{
+			_id: 1,
+			username: 'admin',
+			password: 'admin',
+			role: 'ADMIN',
+			name: 'Istrator',
+			firstName: 'Admin'
+		},
         {
             _id: 2,
             username: 'test',
@@ -27,7 +25,8 @@ var defaultTasksName = ['Daily', 'Private Backlog', 'Work Backlog', 'Shopping'];
             role: 'USER',
             name: 'Kraus',
             firstName: 'Martina'
-        }];
+        }
+	];
 
     for(var index in defaultUsers){
         var req = {};
@@ -37,7 +36,7 @@ var defaultTasksName = ['Daily', 'Private Backlog', 'Work Backlog', 'Shopping'];
             .then(createUserFromReq)
             .then(hashPassword)
             .then(storeUser)
-            .then(addDefaultTasks)
+            //.then(addDefaultTasks) // this will create the default lists every time on server startup
             .catch(function (err) {
                 console.log(err);
             });
@@ -126,7 +125,7 @@ function hashPassword(args) {
 function storeUser(args) {
     return new Promise(function (resolve, reject) {
         args.db.collection('users').findOneAndUpdate({username: args.user.username}, {$setOnInsert: args.user}, {upsert: true}, function (err, result) {
-            console.log(result);
+            //console.log(result);
             if (err)
                 reject({status: 400, err: err});
             else
@@ -198,7 +197,7 @@ router.post('/', function (req, res, next) {
         .then(createUserFromReq)
         .then(hashPassword)
         .then(storeUser)
-        .then(addDefaultTasks)
+        //.then(addDefaultTasks)
         .then(function (args) {
             res.json(args.default.user.ops[0]);
         })

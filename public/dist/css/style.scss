@@ -9,6 +9,38 @@ body {
 
 * { outline: 0; }
 .full-width { width: 100%; }
+.m-0 { margin: 0; }
+.m-t-0 { margin-top: 0; }
+.m-r-0 { margin-right: 0; }
+.m-b-0 { margin-bottom: 0; }
+.m-l-0 { margin-left: 0; }
+
+.stroke-through {
+  color: $gray;
+  text-decoration: line-through;
+}
+
+// ------------- View animation
+// ------------------------------
+.slide-left-right {
+  &.ng-enter, &.ng-leave { @include transition(all, $transition-duration, cubic-bezier(0.215, 0.610, 0.355, 1.000)); }
+  &.ng-enter, &.ng-leave-active { @include transform(translate3d(100%, 0, 0)); }
+  &.ng-leave, &.ng-enter-active { @include transform(translate3d(0, 0, 0)); }
+}
+
+// ----------- Rotations
+// -----------------------------
+$rotations: (45, 180, 360);
+.rotate {
+  @include transition(transform, $transition-duration, $ease-out-expo);
+
+  @each $key in $rotations {
+	&-#{$key} {
+	  &.on { @include transform(rotate(#{$key}deg)); }
+	  &.off { @include transform(rotate(0deg)); }
+	}
+  }
+}
 
 // ----------- color list
 // -----------------------------
@@ -50,10 +82,12 @@ $colorList: (
   .input-holder {
 	background-color: $white;
 	//padding: 0 10px;
+	padding-left: 10px;
+	@include border-radius(15px);
 	input {
 	  border: none;
 	  line-height: 40px;
-	  padding: 0 10px;
+	  //padding: 0 10px;
 	  width: 100%;
 	}
   }
@@ -88,7 +122,7 @@ md-grid-list {
   margin: 8px;
 
   md-grid-tile {
-	@include transition(all, 400ms, ease-out);
+	@include transition(all, $transition-duration, $ease-out-expo);
 	@include box-shadow(0 1px 5px rgba(0,0,0,.5));
 
 	figure { display: block; }
@@ -102,53 +136,159 @@ md-grid-list {
 	  }
 	}
 
+	md-grid-tile-footer {
+	  figcaption { @extend .full-width; }
+	  .shared-list-avatar {
+		@include circle(30px);
+		&.md-fab {
+		  background-color: rgba(0, 0, 0, .25);
+		  @include box-shadow(none);
+		}
+		&.md-fab.md-mini { line-height: 10px; }
+		md-icon {
+		  font-size: 130%;
+		  width: auto;
+		  height: auto;
+		}
+	  }
+	}
+
 	.btn-add-task {
 	  position: absolute;
 	  right: 0;
 	  top: 0;
-	  .md-button { margin: 0; }
+	  .md-button {
+		margin: 0;
+		md-icon { @include transparency(0.5, 50); }
+	  }
 	}
 
 	// task list items
 	md-list {
 	  margin-top: 40px;
-	  md-list-item {
-		&.add-task-input {
-		  &.ng-enter, &.ng-leave {
-			@include transition(all, .2s, ease);
+	  font-size: 90%;
+
+	  &.todo-active, &.todo-inactive {
+		.todos {
+		  @include transition(all, $transition-duration, $ease-out-expo);
+
+		  .md-mini {
+			width: auto;
+			@extend .m-0;
+			md-icon {
+			  color: rgba(0, 0, 0,.3);
+			  font-size: 140%;
+			  @include transition(all, $transition-duration, linear);
+			  &:hover { color: rgba(0, 0, 0, .6); }
+			}
 		  }
-		  &.ng-enter, &.ng-leave-active {
+		}
+	  }
+	  &.todo-active {
+		.todos {
+		  &.ng-enter {
 			@include transparency(0, 0);
-			@include transform(translate3d(0, -10px, 0));
+			@include transform(translate3d(0, 200%, 0));
 		  }
 		  &.ng-leave, &.ng-enter-active {
 			@include transparency(1, 100);
 			@include transform(translate3d(0, 0, 0));
 		  }
+		  &.ng-leave-active {
+			@include transparency(0, 0);
+			@include transform(translate3d(0, 200%, 0));
+		  }
+		}
+	  }
+	  &.todo-inactive {
+		.todos {
+		  &.ng-enter {
+			@include transparency(0, 0);
+			@include transform(translate3d(0, -200%, 0));
+		  }
+		  &.ng-leave, &.ng-enter-active {
+			@include transparency(1, 100);
+			@include transform(translate3d(0, 0, 0));
+		  }
+		  &.ng-leave-active {
+			@include transparency(0, 0);
+			@include transform(translate3d(0, -200%, 0));
+		  }
+		}
+
+		md-list-item {
+		  .md-list-item-inner > md-icon:first-child {
+			margin-right: 10px;
+		  }
+		}
+	  }
+	  md-list-item {
+		min-height: 28px;
+
+		&.add-task-input {
+		  &.ng-enter, &.ng-leave {
+			@include transition(all, $transition-duration, $ease-out-expo);
+		  }
+		  &.ng-enter, &.ng-leave {
+			@include transparency(0, 0);
+			@include transform(translate3d(0, -20px, 0));
+		  }
+		  &.ng-leave, &.ng-enter-active {
+			@include transparency(1, 100);
+			@include transform(translate3d(0, 0, 0));
+		  }
+		  &.ng-leave-active {
+			@include transparency(0, 0);
+			@include transform(translate3d(0, -20px, 0));
+		  }
 
 		  md-input-container {
 			input {
 			  //background: rgba(0, 0, 0, .1);
-			  border-bottom-color: rgba(255, 255, 255, .4);
+			  border-bottom-color: rgba(0, 0, 0, .3);
 			  padding: 5px 0;
 			  &:focus { padding: 5px 0; }
 			}
 		  }
 		}
-		min-height: 28px;
+
 		.md-list-item-inner {
 		  min-height: 28px;
 		  > md-checkbox:first-child { margin-right: 5px; }
 		  p {
 			overflow: hidden;
 			text-overflow: ellipsis;
-			&.stroke-through {
-			  color: $gray;
-			  text-decoration: line-through;
-			}
 		  }
 		}
 	  }
 	}
   }
+}
+
+.shared-list-dialog {
+  md-toolbar {
+	.md-toolbar-tools { font-size: 90%; }
+  }
+  md-list {
+	md-list-item {
+	  md-checkbox:first-child {
+		margin-right: 10px;
+	  }
+	}
+  }
+
+  .list-user {
+	color: $gray;
+	font-size: 90%;
+	md-icon {
+	  color: #b2b2b2;
+	  font-size: 140%;
+	}
+  }
+}
+
+// ----- Toast
+// --------------
+md-toast.md-default-theme, md-toast {
+  background-color: #c65428;
 }

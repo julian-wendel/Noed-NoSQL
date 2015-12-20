@@ -6,7 +6,7 @@
 
 var app = angular.module('NoedSQL', ['ngMaterial', 'ngMessages', 'ui.router', 'angular-jwt']);
 
-app.run(function($rootScope, $state) {
+app.run(function($rootScope, $state, $timeout, $mdToast) {
 	/**
 	 * Redirects to the specified state.
 	 * @param {string} to Absolute state name or relative state path.
@@ -16,6 +16,28 @@ app.run(function($rootScope, $state) {
 	$rootScope.navigateTo = function(to, params, options) {
 		$state.go(to, params, options);
 	};
+
+	$rootScope.$on('$stateChangeStart', function(evt, toState) {
+		if (toState && toState.resolve)
+			$rootScope.showLoading = true;
+	});
+
+	$rootScope.$on('$stateChangeSuccess', function() {
+		$timeout(function() { $rootScope.showLoading = false; }, 500);
+	});
+
+	/**
+	 * Shows a toast information overlay at the top right corner.
+	 * @param msg{string=} - the message to be passed.
+	 */
+	$rootScope.showToast = function(msg) {
+		$mdToast.show(
+			$mdToast.simple()
+				.content(msg)
+				.position('top right')
+				.hideDelay(5000)
+		);
+	}
 });
 
 app.config(function($stateProvider, $urlRouterProvider, $httpProvider) {
@@ -27,16 +49,15 @@ app.config(function($stateProvider, $urlRouterProvider, $httpProvider) {
         })
         .state('tasks', {
             url: "/tasks",
-            params: {userId: ':userId'},
             templateUrl: "views/tasks.html",
             resolve: {
-				TaskLists: function(TaskServices, $stateParams) {
-                    return TaskServices.all($stateParams.userId);
+				TaskLists: function(TaskServices) {
+                    return TaskServices.all();
                 }
             },
             controller: 'TasksCtrl'
         });
 
-    $urlRouterProvider.otherwise("/tasks");
+    $urlRouterProvider.otherwise("/login");
     $httpProvider.interceptors.push('AuthInterceptor');
 });

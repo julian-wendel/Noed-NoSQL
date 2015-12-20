@@ -1,30 +1,38 @@
-<md-dialog aria-label="Shared Lists"  ng-cloak>
-    <form>
-        <md-toolbar>
-            <div class="md-toolbar-tools">
-                <h2>Shared Lists</h2>
-                <span flex></span>
-                <md-button class="md-icon-button" ng-click="cancel()">
-                    <md-icon md-font-set="material-icons">close</md-icon>
-                </md-button>
-            </div>
-        </md-toolbar>
-
-        <md-dialog-content>
-            <md-list ng-cloak>
-                <md-list-item ng-repeat="task in publicTasks">
-                    <md-checkbox ng-init="task.acquire = task.owner.indexOf(user.id) != '-1'" ng-model="task.acquire" aria-label="Todo"></md-checkbox>
-                    <p>{{task.name}}</p>
-                </md-list-item>
-            </md-list>
-        </md-dialog-content>
-
-        <div class="md-actions">
+<md-dialog class="shared-list-dialog" aria-label="Shared Lists" ng-cloak flex="40" flex-sm="85" >
+    <md-toolbar>
+        <div class="md-toolbar-tools">
+            <h2><md-icon md-font-set="material-icons">share</md-icon> Shared Lists</h2>
             <span flex></span>
-            <md-button>
-                Save
+            <md-button class="md-icon-button" ng-click="cancel()">
+                <md-icon md-font-set="material-icons">close</md-icon>
             </md-button>
         </div>
-    </form>
+    </md-toolbar>
+
+    <md-dialog-content>
+		<md-content class="md-padding">
+			Choose the lists you want to add to your list.
+		</md-content>
+
+		<div ng-if="publicLists.length === 0 && showWaiting" layout="row" layout-sm="column" layout-align="center center">
+			<md-progress-circular class="md-hue-3" md-mode="indeterminate" md-diameter="40"></md-progress-circular>
+		</div>
+
+		<p ng-if="publicLists.length === 0 && !showWaiting" layout="row" layout-align="center center">There is no shared list at the moment.</p>
+
+		<md-list ng-if="publicLists.length > 0 && !showWaiting" class="m-t-0" ng-cloak>
+			<!-- show only the shared lists from others -->
+			<md-list-item ng-repeat="list in publicLists" ng-if="list.owner.indexOf(user.id) < 0">
+				<md-checkbox class="md-primary" aria-label="Todo" ng-click="addToLists(list)"></md-checkbox><!--ng-init="task.acquire = task.owner.indexOf(user.id) !== -1" -->
+				<p>{{list.name}}</p>
+				<span class="list-user"><md-icon class="gray-text" md-font-set="material-icons">person</md-icon>{{user.username}}</span>
+			</md-list-item>
+		</md-list>
+    </md-dialog-content>
+
+    <div class="md-actions">
+        <span flex></span>
+        <md-button ng-click="hide()">Done</md-button>
+    </div>
 </md-dialog>
 
