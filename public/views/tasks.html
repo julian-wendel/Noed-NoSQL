@@ -1,3 +1,22 @@
+<md-button class="md-fab md-icon-button md-mini darkgray-background btn-menu" ng-click="toggleMenu();">
+	<md-icon md-font-set="material-icons">menu</md-icon>
+</md-button>
+<md-sidenav class="md-sidenav-left md-whiteframe-z2" md-component-id="left">
+	<md-toolbar class="md-theme-light">
+		<h1 class="md-toolbar-tools">
+			{{currentUser.firstName}} {{currentUser.name}}
+		</h1>
+	</md-toolbar>
+	<md-content layout-padding>
+		<md-list>
+			<md-list-item ng-click="logout()">
+				<p>Logout</p>
+				<md-icon md-font-set="material-icons">exit_to_app</md-icon>
+			</md-list-item>
+		</md-list>
+	</md-content>
+</md-sidenav>
+
 <div class="toolbar" layout="column"><!-- layout-margin layout-align="center center"-->
 	<form name="todoForm" novalidate class="input-holder md-whiteframe-3dp" layout="row" layout-align="center center" flex="100" flex-gt-md="45">
 		<input type="text" flex="80" placeholder="Add new task" ng-model="taskList.name" required>
@@ -78,7 +97,7 @@
 
 			<md-grid-tile-footer>
 				<!-- own list -> shows private/public -->
-				<md-list ng-if="list.owner[0] == user.id" class="m-t-0" ng-cloak>
+				<md-list ng-if="list.owner[0] == currentUser.id" class="m-t-0" ng-cloak>
 					<md-list-item>
 						<p ng-bind="list.public ? 'Public' : 'Private'"></p>
 						<md-switch class="m-r-0" ng-model="list.public" aria-label="Public list" ng-change="update(list)">
@@ -86,11 +105,12 @@
 				</md-list>
 
 				<!-- shared list -->
-				<md-list ng-if="list.owner[0] != user.id" class="m-t-0" ng-cloak>
-					<md-list-item>
-						<md-button class="md-fab md-mini md-icon-button shared-list-avatar" aria-label="List shared from {{user.username}}">
+				<md-list ng-if="list.owner[0] != currentUser.id" class="m-t-0" ng-cloak>
+					<!-- filter the shared lists' owners -->
+					<md-list-item ng-repeat="user in users | filter: {_id: list.owner[0]}:true">
+						<md-button class="md-fab md-mini md-icon-button shared-list-avatar" aria-label="List shared from {{user.firstName}} {{user.name}}">
 							<md-icon md-font-set="material-icons">person</md-icon>
-							<md-tooltip md-direction="top">{{user.username}}</md-tooltip>
+							<md-tooltip md-direction="top">{{user.firstName}} {{user.name}}</md-tooltip>
 						</md-button>
 					</md-list-item>
 				</md-list>

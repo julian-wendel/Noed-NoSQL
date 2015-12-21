@@ -51,7 +51,9 @@ function createToken(args){
     return new Promise(function (resolve, reject) {
         jwt.sign({
             id: args.user._id,
-            username: args.user.username,
+            //username: args.user.username,
+			name: args.user.name,
+			firstName: args.user.firstName,
             role: args.user.role
         }, privateKey, {expiresIn: "1h"}, function createToken(token) {
             resolve({token: token});

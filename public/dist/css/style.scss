@@ -74,6 +74,30 @@ $colorList: (
   }
 }
 
+// ----------- menu button
+// -----------------------------
+.btn-menu.md-button.md-fab.md-mini {
+  position: absolute;
+  top: 2em;
+  @include transition(all, $transition-duration, $ease-out-expo);
+  @include transparency(.3, 30);
+
+  &:hover {
+	@include transparency(1, 100);
+  }
+
+  @media all and (max-width: 767px) {
+	line-height: 30px;
+	top: 5px;
+	@include circle(30px);
+	md-icon {
+	  font-size: 140%;
+	  width: auto;
+	  height: auto;
+	}
+  }
+}
+
 .noed-sql .toolbar {
   margin: 2em auto .8em;
   width: 50%;
@@ -88,9 +112,13 @@ $colorList: (
 	@include border-radius(15px);
 	input {
 	  border: none;
-	  line-height: 40px;
+	  line-height: 30px;
 	  //padding: 0 10px;
 	  width: 100%;
+	}
+	.md-button {
+	  height: 36px;
+	  line-height: 36px;
 	}
   }
   .color-picker {

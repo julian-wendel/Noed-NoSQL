@@ -6,7 +6,7 @@
 
 var app = angular.module('NoedSQL', ['ngMaterial', 'ngMessages', 'ui.router', 'angular-jwt']);
 
-app.run(function($rootScope, $state, $timeout, $mdToast) {
+app.run(function($rootScope, $state, $timeout, $mdToast, UserService, jwtHelper) {
 	/**
 	 * Redirects to the specified state.
 	 * @param {string} to Absolute state name or relative state path.
@@ -20,6 +20,22 @@ app.run(function($rootScope, $state, $timeout, $mdToast) {
 	$rootScope.$on('$stateChangeStart', function(evt, toState) {
 		if (toState && toState.resolve)
 			$rootScope.showLoading = true;
+
+		// Check if the user is authenticated. When not, go back to login page, only if the current state
+		// is not already on the way to login page. We don't want to check if the views which don't have
+		if (toState && toState.data && toState.data.requiresLogin) {
+			var token = UserService.getToken(),
+				isExpired = token ? jwtHelper.isTokenExpired(token) : true;
+
+			if (isExpired) {
+				if (toState.name !== 'login') {
+					evt.preventDefault();
+					$state.go('login', {}, {reload: true});
+				}
+			} else {
+				// authenticated, continue
+			}
+		}
 	});
 
 	$rootScope.$on('$stateChangeSuccess', function() {
@@ -55,6 +71,9 @@ app.config(function($stateProvider, $urlRouterProvider, $httpProvider) {
                     return TaskServices.all();
                 }
             },
+			data: {
+				requiresLogin: true
+			},
             controller: 'TasksCtrl'
         });
 

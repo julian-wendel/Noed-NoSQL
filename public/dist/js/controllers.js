@@ -9,17 +9,30 @@
 		$scope.user = {};
 
 		$scope.login = function(user) {
-			UserService.login(user).then(function (res) {
-				UserService.setAuthHeader(res.data.token);
+			UserService.login(user).then(function() {
 				$scope.navigateTo('tasks');
-			}, function (err) {
+			}, function () {
 				$scope.showToast('Username and password don\'t match.');
 			});
 		}
 	});
 
-	app.controller('TasksCtrl', function($scope, $rootScope, $timeout, $filter, $mdDialog, TaskLists, TaskServices, UserService) {
+	app.controller('TasksCtrl', function($scope, $rootScope, $timeout, $filter, $mdDialog, $mdSidenav, TaskLists, TaskServices, UserService, jwtHelper) {
 		var COLORS = ['amber', 'lightblue', 'lightyellow', 'green', 'red', 'white', 'purple'];
+		// current logged in user
+		$scope.currentUser = jwtHelper.decodeToken(UserService.getToken());
+
+		$scope.toggleMenu = function() {
+			$mdSidenav('left').toggle();
+		};
+
+		$scope.logout = function() {
+			UserService.logout();
+			$mdSidenav('left').close();
+			$timeout(function() {
+				$scope.navigateTo('login', {}, {reload: true});
+			}, 500)
+		};
 
 		// TODO remove task list
 
@@ -80,7 +93,7 @@
 					}
 				}
 			}
-		};
+		};*/
 
 		// ------------------ get all users -------------- //
 
@@ -89,11 +102,11 @@
 			UserService.all().then(function(users) {
 				$scope.users = users;
 			}, function(error) {
-				console.log(error);
+				$scope.showToast('Error retrieving users.');
 			});
 		};
 
-		queryUsers();*/
+		queryUsers();
 
 		// ------------------ shared lists --------------- //
 
@@ -125,8 +138,6 @@
 				targetEvent: ev,
 				clickOutsideToClose: true,
 				onComplete: queryPublicTaskLists
-			}).then(function() {
-				console.log($scope.tempList);
 			});
 		};
 
@@ -172,7 +183,7 @@
 				// hide the add todo input field
 				$scope.showAddTodoInput = false;
 			}, function(error) {
-				console.log(error);
+				$scope.showToast('Error adding the todo task.');
 			});
 		};
 

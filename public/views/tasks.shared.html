@@ -1,4 +1,4 @@
-<md-dialog class="shared-list-dialog" aria-label="Shared Lists" ng-cloak flex="40" flex-sm="85" >
+<md-dialog class="shared-list-dialog" aria-label="Shared Lists" ng-cloak flex="40" flex-sm="85" flex-md="65">
     <md-toolbar>
         <div class="md-toolbar-tools">
             <h2><md-icon md-font-set="material-icons">share</md-icon> Shared Lists</h2>
@@ -22,10 +22,12 @@
 
 		<md-list ng-if="publicLists.length > 0 && !showWaiting" class="m-t-0" ng-cloak>
 			<!-- show only the shared lists from others -->
-			<md-list-item ng-repeat="list in publicLists" ng-if="list.owner.indexOf(user.id) < 0">
-				<md-checkbox class="md-primary" aria-label="Todo" ng-click="addToLists(list)"></md-checkbox><!--ng-init="task.acquire = task.owner.indexOf(user.id) !== -1" -->
+			<md-list-item ng-repeat="list in publicLists" ng-if="list.owner.indexOf(currentUser.id) < 0">
+				<md-checkbox class="md-primary" aria-label="Todo" ng-click="addToLists(list)"></md-checkbox>
 				<p>{{list.name}}</p>
-				<span class="list-user"><md-icon class="gray-text" md-font-set="material-icons">person</md-icon>{{user.username}}</span>
+				<span class="list-user" ng-repeat="user in users | filter: {_id: list.owner[0]}:true">
+					<md-icon class="gray-text" md-font-set="material-icons">person</md-icon>{{user.firstName}} {{user.name}}
+				</span>
 			</md-list-item>
 		</md-list>
     </md-dialog-content>

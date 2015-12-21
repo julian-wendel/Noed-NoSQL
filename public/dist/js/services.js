@@ -5,45 +5,67 @@
 (function () {
     'use strict';
 
-	// TODO rewrite the interceptor (current it causes problem if local storage is empty), add sign up, assign user on signing in
-    app.factory('AuthInterceptor', function($rootScope, $q, jwtHelper) {
+	// TODO add sign up
+    app.factory('AuthInterceptor', function($rootScope, $q) {
         return {
-            'request': function (config) {
-                console.log(config);
-                if(localStorage.getItem('token'))
-                    config.headers['x-auth-token'] = localStorage.getItem('token');
+            request: function (config) {
+				var token = window.localStorage.getItem('token');
 
-                if(!$rootScope.user)
-                    $rootScope.user = jwtHelper.decodeToken(localStorage.getItem('token'));
-
-                return config;
+				// set authentication header for every outgoing request
+				if(token)
+					config.headers['X-Auth-Token'] = token;
+				return config || $q.when(config);
             },
-            'responseError': function (rejection) {
-                if(rejection.status == '401')
-                    $rootScope.navigateTo('login');
+
+            responseError: function (rejection) {
+				if(rejection.status === 401)
+					$rootScope.navigateTo('login', {}, {reload: true});
                 return $q.reject(rejection);
             }
         }
     });
 
     app.factory('UserService', ['$q', '$http', function ($q, $http) {
-        return {
-            setAuthHeader: function (token) {
-                localStorage.setItem('token', token);
-            },
+		var LOCAL_TOKEN_KEY = 'token';
 
+		var setCredentials = function(token) {
+			$http.defaults.headers.common['X-Auth-Token'] = token;
+		};
+
+		var getUserCredentials = function () {
+			var token = window.localStorage.getItem(LOCAL_TOKEN_KEY);
+			// no need to check if the token is valid as we will use http interceptor to handle it
+			if (token) setCredentials(token);
+		};
+
+		getUserCredentials();
+
+		var saveUserCredentials = function (token) {
+			window.localStorage.setItem(LOCAL_TOKEN_KEY, token);
+			setCredentials(token);
+		};
+
+		var clearUserCredentials = function () {
+			$http.defaults.headers.common['X-Auth-Token'] = undefined;
+			window.localStorage.removeItem(LOCAL_TOKEN_KEY);
+		};
+
+        return {
             login: function (data) {
                 var $d = $q.defer();
                 $http({
                     method: 'POST',
                     url: '/api/token',
                     data: data
-                }).then(function (response) {
-                    if (response.status === 200)
-                    	$d.resolve(response);
-					else
-						$d.reject(response.status);
+                }).then(function (res) {
+                    if (res.status === 200) {
+						saveUserCredentials(res.data.token);
+						$d.resolve();
+					} else
+						$d.reject(res.status);
                 }, function (error) {
+					// clear user information
+					clearUserCredentials();
                     $d.reject(error);
                 });
                 return $d.promise;
@@ -61,6 +83,16 @@
 					deferred.reject(status);
 				});
 				return deferred.promise;
+			},
+
+			getToken: function() {
+				// token contains current user's information. Needs to decode it using jwtHelper
+				var token = window.localStorage.getItem(LOCAL_TOKEN_KEY);
+				return token ? token : '';
+			},
+
+			logout: function() {
+				clearUserCredentials();
 			}
         }
     }]);
@@ -101,24 +133,6 @@
             return deferred.promise;
         };
 
-        /*DEPRECATED
-         var queryTodos = function() {
-         var deferred = $q.defer();
-
-         $http({
-         method: 'GET',
-         url: '/api/todos'
-         }).then(function(res) {
-         if (res.status === 200)
-         deferred.resolve(res.data);
-         else
-         deferred.reject(res.status);
-         }, function(error, status) {
-         deferred.reject(status);
-         });
-         return deferred.promise;
-         };*/
-
         var getAllPublicTasks = function () {
             var deferred = $q.defer();
 
@@ -138,33 +152,13 @@
             return deferred.promise;
         };
 
-        /*DEPRECATED
-         var getTaskById = function(id) {
-         var deferred = $q.defer();
-
-         $http({
-         method: 'GET',
-         url: apiPath,
-         params: {id: id}
-         }).then(function(res) {
-         if (res.status === 200)
-         deferred.resolve(res.data);
-         else
-         deferred.reject(res.status);
-         }, function(error, status) {
-         deferred.reject(status);
-         });
-
-         return deferred.promise;
-         };*/
-
         var update = function (list) {
             var deferred = $q.defer();
 
             $http({
                 method: 'PUT',
                 url: apiPath,
-                params: {id: list._id, name: list.name, public: list.public, release: false} //TODO relese parameter to drop shared list
+                params: {id: list._id, name: list.name, public: list.public}
             }).then(function (res) {
 				if (res.status === 200)
                     deferred.resolve();
@@ -198,13 +192,12 @@
         return {
             add: add,
             all: all,
-            //queryTodos: queryTodos,
             update: update,
             remove: remove,
-            //getTaskById: getTaskById,
             getAllPublicTasks: getAllPublicTasks
         }
     });
+
     app.factory('TodoService', function ($q, $http) {
         var apiPath = '/api/todos';
 

@@ -38,7 +38,7 @@ app.use('/api/tasks', tasks);
 app.use('/api/todos', restrict.to(['USER', 'ADMIN']));
 app.use('/api/todos', todos);
 
-app.use('/api/users', restrict.to(['ADMIN']));
+app.use('/api/users', restrict.to(['USER', 'ADMIN']));
 app.use('/api/users', users);
 
 app.use('/api/token', token);

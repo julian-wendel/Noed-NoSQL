@@ -207,6 +207,35 @@ body {
   .yellow-background {
     background-color: #ffff8d !important; }
 
+.btn-menu.md-button.md-fab.md-mini {
+  position: absolute;
+  top: 2em;
+  -webkit-transition: all 400ms cubic-bezier(0.19, 1, 0.22, 1);
+  -moz-transition: all 400ms cubic-bezier(0.19, 1, 0.22, 1);
+  -o-transition: all 400ms cubic-bezier(0.19, 1, 0.22, 1);
+  transition: all 400ms cubic-bezier(0.19, 1, 0.22, 1);
+  -moz-opacity: 0.3;
+  opacity: 0.3;
+  filter: alpha(opacity=30);
+  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=30)"; }
+  .btn-menu.md-button.md-fab.md-mini:hover {
+    -moz-opacity: 1;
+    opacity: 1;
+    filter: alpha(opacity=100);
+    -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=100)"; }
+  @media all and (max-width: 767px) {
+    .btn-menu.md-button.md-fab.md-mini {
+      line-height: 30px;
+      top: 5px;
+      min-width: 30px;
+      max-width: 30px;
+      min-height: 30px;
+      max-height: 30px; }
+      .btn-menu.md-button.md-fab.md-mini md-icon {
+        font-size: 140%;
+        width: auto;
+        height: auto; } }
+
 .noed-sql .toolbar {
   margin: 2em auto .8em;
   width: 50%;
@@ -226,8 +255,11 @@ body {
     border-radius: 15px; }
     .noed-sql .toolbar .input-holder input {
       border: none;
-      line-height: 40px;
+      line-height: 30px;
       width: 100%; }
+    .noed-sql .toolbar .input-holder .md-button {
+      height: 36px;
+      line-height: 36px; }
   .noed-sql .toolbar .color-picker {
     font-size: 90%; }
     .noed-sql .toolbar .color-picker .md-button {
