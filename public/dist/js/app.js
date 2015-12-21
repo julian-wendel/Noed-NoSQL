@@ -23,7 +23,7 @@ app.run(function($rootScope, $state, $timeout, $mdToast) {
 	});
 
 	$rootScope.$on('$stateChangeSuccess', function() {
-		$timeout(function() { $rootScope.showLoading = false; }, 500);
+		$timeout(function() { $rootScope.showLoading = false; }, 800);
 	});
 
 	/**

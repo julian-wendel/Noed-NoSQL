@@ -144,6 +144,26 @@ router.put('/', function (req, res, next) {
 											res.send(results);
 										}
 									);
+								} else if (o.owner.indexOf(req.jwt.id) >= 0 && o.owner.length > 1 && !req.query.public) {
+									// the list original owner changes the list to private, so remove other owners for the shared list
+									var owner = o.owner.slice(o.owner.indexOf(req.jwt.id), 1);
+
+									db.collection('tasks').updateOne(
+										{"_id": req.query.id},
+										{
+											$set: {
+												name: req.query.name,
+												public: req.query.public,
+												owner: owner
+											}
+										}, function (error, results) {
+											db.close();
+											if (error)
+												res.send(error.message);
+											else
+												res.send(results);
+										}
+									);
 								} else {
 									// updating own public list
 									db.collection('tasks').updateOne(
