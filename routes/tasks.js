@@ -24,6 +24,9 @@ var defaultTaskLists = [
 	}
 ];
 
+/// <summary>
+/// insert default tasklists for new user into database
+/// </summary>
 var createDefaultTaskLists = function(req) {
 	var lists = [];
 
@@ -41,7 +44,13 @@ var createDefaultTaskLists = function(req) {
 	return lists;
 };
 
-//Get items from database
+/// <summary>
+/// Get tasklist from datebase
+/// </summary>
+/// <description>
+/// if req.query.public == true return all public tasklists
+/// else return current users tasklists
+/// </description>
 router.get('/', function (req, res, next) {
     var query = {}; // customize the request query for private and public lists
 
@@ -55,7 +64,6 @@ router.get('/', function (req, res, next) {
 
     database.connect(conStr, function (err, db) {
         if (!err) {
-            console.log("We are connected");
             db.collection("tasks").find(query).toArray(function (err, result) {
                 if (err) {
                     console.log(err);
@@ -89,6 +97,9 @@ router.get('/', function (req, res, next) {
     });
 });
 
+/// <summary>
+/// create new tasklist on database
+/// </summary>
 router.post('/', function (req, res, next) {
     if (req.query && req.query.name && req.query.public && req.query.color) {
         var task = req.query;
@@ -116,6 +127,9 @@ router.post('/', function (req, res, next) {
         res.sendStatus(400);
 });
 
+/// <summary>
+/// update tasklist on database
+/// </summary>
 router.put('/', function (req, res, next) {
     if (req.query && req.query.id && req.query.name && req.query.public) {
         var task = req.query;
@@ -253,12 +267,13 @@ router.put('/', function (req, res, next) {
         res.sendStatus(400);
 });
 
-//delete item from database
+/// <summary>
+/// delete tasklist from database
+/// </summary>
 router.delete('/', function (req, res, next) {
     if (req.query && req.query.id) {
         database.connect(conStr, function (err, db) {
             if (!err) {
-                console.log("We are connected");
                 db.collection('tasks').deleteOne(
                     {"_id": req.query.id},
                     function (err, results) {

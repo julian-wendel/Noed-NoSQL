@@ -7,6 +7,9 @@ var database = require('mongodb').MongoClient;
 var conStr = "mongodb://127.0.0.1:27017/nosql";
 var uuid = require('uuid');
 
+/// <summary>
+/// get todo with specified id from database
+/// </summary>
 router.get('/', function (req, res, next) {
     if (req.query && req.query.id && req.query._todoId) {
         database.connect(conStr, function (err, db) {
@@ -34,6 +37,9 @@ router.get('/', function (req, res, next) {
         res.sendStatus(400);
 });
 
+/// <summary>
+/// insert new todo to database
+/// </summary>
 router.post('/', function (req, res, next) {
     if (req.query && req.query._id && req.query.name) {
         var todo = {
@@ -71,6 +77,9 @@ router.post('/', function (req, res, next) {
         res.sendStatus(400)
 });
 
+/// <summary>
+/// update todo in database
+/// </summary>
 router.put('/', function (req, res, next) {
     if (req.query && req.query._id && req.query._todoId && req.query.name && req.query.done) {
         database.connect(conStr, function (err, db) {
@@ -97,7 +106,9 @@ router.put('/', function (req, res, next) {
         res.sendStatus(400);
 });
 
-//delete item from database
+/// <summary>
+/// delete todo from database
+/// </summary>
 router.delete('/', function (req, res, next) {
     //delete single item
     if (req.query && req.query._id && req.query._todoId) {
