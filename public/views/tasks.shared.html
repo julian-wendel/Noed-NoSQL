@@ -1,13 +1,14 @@
 <md-dialog class="shared-list-dialog" aria-label="Shared Lists" ng-cloak flex="40" flex-sm="85" flex-md="65">
-    <md-toolbar>
-        <div class="md-toolbar-tools">
-            <h2><md-icon md-font-set="material-icons">share</md-icon> Shared Lists</h2>
-            <span flex></span>
-            <md-button class="md-icon-button" ng-click="cancel()">
-                <md-icon md-font-set="material-icons">close</md-icon>
-            </md-button>
-        </div>
-    </md-toolbar>
+	<md-toolbar>
+		<div class="md-toolbar-tools {{(taskList.color == 'white' || taskList.color == 'lightyellow') ? 'lightgray' : taskList.color}}-background">
+			<h2 ng-class="{'darkgray': (taskList.color == 'white' || taskList.color == 'lightyellow')}"><md-icon ng-class="{'darkgray': (taskList.color == 'white' || taskList.color == 'lightyellow')}" md-font-set="material-icons">share</md-icon> Shared Lists</h2>
+			<span flex></span>
+			<md-button class="md-icon-button" ng-click="cancel()">
+				<md-icon md-font-set="material-icons">close</md-icon>
+			</md-button>
+		</div>
+	</md-toolbar>
+	<md-divider ng-if="taskList.color == 'white' || taskList.color == 'lightyellow'"></md-divider>
 
     <md-dialog-content>
 		<md-content class="md-padding">

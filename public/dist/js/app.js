@@ -80,3 +80,24 @@ app.config(function($stateProvider, $urlRouterProvider, $httpProvider) {
     $urlRouterProvider.otherwise("/login");
     $httpProvider.interceptors.push('AuthInterceptor');
 });
+
+/**
+ * Directive that adds a class <code>.sticky</code> while scrolling page down.
+ */
+app.directive('jhStickyHeader', function () {
+	var link = function(scope, element) {
+		angular.element(window).bind('scroll', function () {
+			var offset = window.pageYOffset || document.body.scrollTop;
+
+			if (offset >= 70)
+				element.addClass('sticky');
+			else
+				element.removeClass('sticky');
+		})
+	};
+
+	return {
+		restrict: 'C',
+		link: link
+	}
+});

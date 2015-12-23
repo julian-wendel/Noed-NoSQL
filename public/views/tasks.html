@@ -1,12 +1,10 @@
-<md-button class="md-fab md-icon-button md-mini darkgray-background btn-menu" ng-click="toggleMenu();">
-	<md-icon md-font-set="material-icons">menu</md-icon>
-</md-button>
 <md-sidenav class="md-sidenav-left md-whiteframe-z2" md-component-id="left">
-	<md-toolbar class="md-theme-light">
-		<h1 class="md-toolbar-tools">
+	<md-toolbar class="md-theme-light {{(taskList.color == 'white' || taskList.color == 'lightyellow') ? 'lightgray' : taskList.color}}-background">
+		<h1 class="md-toolbar-tools {{(taskList.color == 'white' || taskList.color == 'lightyellow') ? 'darkgray' : 'white'}}">
 			{{currentUser.firstName}} {{currentUser.name}}
 		</h1>
 	</md-toolbar>
+	<md-divider ng-if="taskList.color == 'white' || taskList.color == 'lightyellow'"></md-divider>
 	<md-content layout-padding>
 		<md-list>
 			<md-list-item ng-click="logout()">
@@ -17,42 +15,63 @@
 	</md-content>
 </md-sidenav>
 
-<div class="toolbar" layout="column"><!-- layout-margin layout-align="center center"-->
-	<form name="todoForm" novalidate class="input-holder md-whiteframe-3dp" layout="row" layout-align="center center" flex="100" flex-gt-md="45">
-		<input type="text" flex="80" placeholder="Add new task" ng-model="taskList.name" required>
-		<md-button class="md-icon-button md-primary text-right" flex aria-label="Add a task list" ng-disabled="todoForm.$invalid" ng-click="add(taskList);">
+<header id="header" class="jh-sticky-header">
+	<nav flex="20" flex-gt-lg="10" layout="row" layout-align="center center">
+		<md-button class="nav-menu md-fab md-icon-button {{(taskList.color == 'white' || taskList.color == 'lightyellow') ? 'darkgray' : taskList.color}}-background" ng-click="toggleMenu();">
+			<md-icon md-font-set="material-icons">list</md-icon>
+		</md-button>
+		<h4 class="{{(taskList.color == 'white' || taskList.color == 'lightyellow') ? 'darkgray' : taskList.color}}">Noed List</h4>
+	</nav>
+
+	<form name="todoForm" novalidate flex="80" flex-gt-md="70" layout="row" layout-align="center">
+		<input type="text" class="md-whiteframe-1dp" placeholder="Add new list" ng-model="taskList.name" flex="75" flex-gt-md="50" required>
+		<md-button class="md-icon-button md-primary" aria-label="Add a task list" ng-disabled="todoForm.$invalid" ng-click="add(taskList);">
 			<md-icon md-font-set="material-icons">add_circle</md-icon>
 		</md-button>
 
-		<md-button class="md-icon-button md-primary text-left" flex aria-label="Shared Lists" ng-click="showSharedListsDialog()">
-			<md-tooltip md-direction="bottom">Shared lists</md-tooltip>
-			<md-icon md-font-set="material-icons">share</md-icon>
-		</md-button>
+		<md-menu>
+			<md-button class="md-icon-button {{taskList.color}}" aria-label="Options" ng-click="$mdOpenMenu()">
+				<md-tooltip md-direction="bottom">Options</md-tooltip>
+				<md-icon md-font-set="material-icons">settings</md-icon>
+			</md-button>
+
+			<md-menu-content width="4">
+				<md-menu-item>
+					<div role="button" class="md-button" md-ink-ripple>
+						<md-checkbox class="md-warn" ng-model="taskList.public" aria-label="Public list" ng-disabled="!taskList.name">{{taskList.public ? 'Public' : 'Private'}} list</md-checkbox>
+					</div>
+				</md-menu-item>
+				<md-menu-divider></md-menu-divider>
+				<md-menu-item>
+					<md-button aria-label="Select a color">
+						<md-icon md-font-set="material-icons">color_lens</md-icon>
+						Set color for the new list
+					</md-button>
+				</md-menu-item>
+				<md-menu-item class="color-options">
+					<ul layout="row" layout-align="center space-around">
+						<li class="{{color}}-background md-whiteframe-1dp" ng-repeat="color in colors" ng-click="setColor(color)"></li>
+					</ul>
+				</md-menu-item>
+				<md-menu-divider></md-menu-divider>
+				<md-menu-item>
+					<md-button aria-label="Shared Lists" class="md-primary" ng-click="showSharedListsDialog()">
+						<md-icon md-font-set="material-icons">share</md-icon>
+						Shared lists
+					</md-button>
+				</md-menu-item>
+
+			</md-menu-content>
+		</md-menu>
 	</form>
+</header>
 
-	<div layout="row" class="color-picker">
-		<md-checkbox class="md-primary md-hue-3" ng-model="taskList.public" aria-label="Public">Public</md-checkbox>
-
-		<!-- color picker -->
-		<md-fab-speed-dial md-open="isOpen" md-direction="right" class="md-scale">
-			<md-fab-trigger>
-				<md-button aria-label="Color" class="md-fab md-mini md-warn {{taskList.color}}-background">
-					<md-icon md-font-set="material-icons">color_lens</md-icon>
-				</md-button>
-			</md-fab-trigger>
-			<md-fab-actions>
-				<md-button ng-repeat="color in colors" ng-model="taskList.color" ng-click="setColor(color)" aria-label="{{color}}" class="md-fab md-mini {{color}}-background"></md-button>
-			</md-fab-actions>
-		</md-fab-speed-dial>
-	</div>
-</div>
-
-<md-content flex>
+<section id="content">
 	<div ng-if="showLoading" layout="row" layout-sm="column" layout-align="center center">
 		<md-progress-circular class="md-hue-3" md-mode="indeterminate" md-diameter="40"></md-progress-circular>
 	</div>
-    <md-grid-list ng-if="!showLoading" md-row-height-gt-md="4:4" md-row-height="2:2" md-cols-sm="1" md-cols-md="2" md-cols-gt-md="5" md-gutter="12px" md-gutter-gt-sm="8px" >
-        <md-grid-tile ng-repeat="list in taskLists | orderBy: list.todos.length" class="{{list.color || 'gray'}}-background" class="md-whiteframe-5dp" md-rowspan="2" md-colspan="1" md-colspan-sm="1">
+	<md-grid-list ng-if="!showLoading" md-row-height-gt-md="4:4" md-row-height="2:2" md-cols-sm="1" md-cols-md="2" md-cols-gt-md="5" md-gutter="12px" md-gutter-gt-sm="8px" >
+		<md-grid-tile ng-repeat="list in taskLists | orderBy: list.todos.length" class="{{list.color || 'gray'}}-background" class="md-whiteframe-5dp" md-rowspan="2" md-colspan="1" md-colspan-sm="1">
 			<md-grid-tile-header>
 				<h3>{{list.name}}</h3>
 			</md-grid-tile-header>
@@ -100,7 +119,7 @@
 				<md-list ng-if="list.owner[0] == currentUser.id" class="m-t-0" ng-cloak>
 					<md-list-item>
 						<p ng-bind="list.public ? 'Public' : 'Private'"></p>
-						<md-switch class="m-r-0" ng-model="list.public" aria-label="Public list" ng-change="update(list)">
+						<md-switch class="m-r-0" ng-model="list.public" aria-label="Public list" ng-change="update(list)"></md-switch>
 					</md-list-item>
 				</md-list>
 
@@ -114,7 +133,7 @@
 						</md-button>
 					</md-list-item>
 				</md-list>
-            </md-grid-tile-footer>
-        </md-grid-tile>
-    </md-grid-list>
-</md-content>
+			</md-grid-tile-footer>
+		</md-grid-tile>
+	</md-grid-list>
+</section>
