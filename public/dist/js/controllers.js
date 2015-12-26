@@ -5,7 +5,7 @@
 (function() {
 	'use strict';
 
-	app.controller('LoginCtrl', function ($scope, UserService) {
+	app.controller('LoginCtrl', function ($scope, $timeout, UserService) {
 		$scope.user = {};
 
 		$scope.login = function(user) {
@@ -13,6 +13,20 @@
 				$scope.navigateTo('tasks');
 			}, function () {
 				$scope.showToast('Username and password don\'t match.');
+			});
+		};
+
+		$scope.register = function(user) {
+			var self = this;
+			UserService.register(user).then(function() {
+				$timeout(function() {
+					$scope.showRegister = false;
+					self.loginForm.$setPristine();
+					delete $scope.user.name;
+					delete $scope.user.firstName;
+				});
+			}, function () {
+				$scope.showToast('Registration failed. The server returns an error. Please try again.');
 			});
 		}
 	});
@@ -34,7 +48,21 @@
 			}, 500)
 		};
 
-		// TODO remove task list
+		$scope.onLongPress = function() {
+			$scope.showDelete = !$scope.showDelete;
+		};
+
+		/**
+		 * Checks if the current logged in user is in a ng-repeat array. It will be filtered
+		 * out of the array if it's already in.
+		 * @param owners{Array} The owners of a task list array.
+		 * @returns {boolean} True, if the owner doesn't equal to the current logged in user. Otherwise false.
+		 */
+		$scope.ownerFilter = function(owners) {
+			return function(user) { // a user object in an array interation
+				return (!angular.equals(user._id, $scope.currentUser.id) && owners.indexOf(user._id) > -1);
+			}
+		};
 
 		// iterate task lists to modify the daily list name
 		for (var i = 0; i < TaskLists.length; i++) {
@@ -47,7 +75,6 @@
 
 		$rootScope.taskLists = TaskLists;
 		$scope.colors = COLORS;
-		$scope.isOpen = false;
 
 		$scope.taskList = {}; // object for new task list
 		// default values
@@ -63,7 +90,8 @@
 				// successfully added a task list, update scope task lists
 				$rootScope.taskLists.push(data);
 				// reset task list
-				$scope.taskList = {};
+				delete $scope.taskList.name;
+				delete $scope.taskList.public;
 			}, function(error) {
 				$scope.showToast('Error adding a task list.');
 			});
@@ -71,29 +99,42 @@
 
 		$scope.update = function(list) {
 			TaskServices.update(list).then(function() {
-				// the has been updated
+				// the list has been updated
 			}, function() {
 				$scope.showToast('Error updating the task list.');
 			});
 		};
 
-		/**
-		 * Adds attribute 'user' to each task list in the array.
-		 * @param arr{array} The list array to be given.
-		 */
-		/*var assignListToOwner = function(arr) {
-			for (var i = 0; i < arr.length; i++) {
-				var l = arr[i],
-					users = l.owner;
+		$scope.delete = function(list) {
+			// remove the delete button first
+			$scope.showDelete = false;
+			// get the index of this list in the task lists
+			var index = $rootScope.taskLists.indexOf(list);
 
-				for (var j = 0; j < $scope.users.length; j++) {
-					var user = $scope.users[j];
-					if (users.indexOf(user._id) !== -1) {
-						angular.extend(l, {user: user})
-					}
-				}
+			// check if the current user is the list's original owner. If not, just remove this list from view
+			// and this user from owner list array in DB
+			if (!angular.equals(list.owner[0], $scope.currentUser.id)) {
+				TaskServices.update(list).then(function() {
+					$timeout(function() {
+						$rootScope.taskLists.splice(index, 1);
+					}, 500);
+				}, function(error) {
+					$scope.showToast('Error updating the task list.');
+				});
+
+				return;
 			}
-		};*/
+
+			// remove this list both from the view and DB
+			TaskServices.remove(list).then(function() {
+				// successfully deleted the list, update scope
+				$timeout(function() {
+					$rootScope.taskLists.splice(index, 1);
+				}, 500);
+			}, function() {
+				$scope.showToast('Error removing the task list.');
+			});
+		};
 
 		// ------------------ get all users -------------- //
 
@@ -154,16 +195,19 @@
 		};
 
 		/**
-		 * Adds the chosen shared list(s) to an array.
-		 * @param list{object} The list to be added.
+		 * Adds or removes the chosen shared list(s) to/from an array.
+		 * @param list{object} The list to be added/removed.
 		 */
 		$scope.addToLists = function(list) {
-			/*var idx = $scope.tempList.indexOf(list);
-			if (idx > -1) $scope.tempList.splice(idx, 1);
-			else $scope.tempList.push(list);*/
+			// get the index of this list in the task lists' array
+			var index = $rootScope.taskLists.indexOf(list);
+
 			TaskServices.update(list).then(function() {
 				// the list has been updated, update the local scope
-				$rootScope.taskLists.unshift(list);
+				if (index > -1)
+					$rootScope.taskLists.splice(index, 1);
+				else
+					$rootScope.taskLists.unshift(list);
 			}, function() {
 				$scope.showToast('Error adding the selected list to your own list.');
 			});
@@ -202,7 +246,12 @@
 					for (var i = 0; i < $rootScope.taskLists.length; i++) {
 						var l = $rootScope.taskLists[i],
 							t = l.todos;
-						t.splice(t.indexOf(todo._id));
+						for (var j = 0; j < t.length; j++) {
+							if (angular.equals(t[j]._id, todo._id)) {
+								t.splice(j, 1);
+								break;
+							}
+						}
 					}
 				}, 500);
 			}, function(error) {

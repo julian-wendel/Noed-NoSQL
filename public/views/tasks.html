@@ -71,8 +71,12 @@
 		<md-progress-circular class="md-hue-3" md-mode="indeterminate" md-diameter="40"></md-progress-circular>
 	</div>
 	<md-grid-list ng-if="!showLoading" md-row-height-gt-md="4:4" md-row-height="2:2" md-cols-sm="1" md-cols-md="2" md-cols-gt-md="5" md-gutter="12px" md-gutter-gt-sm="8px" >
-		<md-grid-tile ng-repeat="list in taskLists | orderBy: list.todos.length" class="{{list.color || 'gray'}}-background" class="md-whiteframe-5dp" md-rowspan="2" md-colspan="1" md-colspan-sm="1">
+		<md-grid-tile jh-long-press="onLongPress()" ng-repeat="list in taskLists | orderBy: list.todos.length" class="{{list.color || 'gray'}}-background md-whiteframe-5dp scaleOut" md-rowspan="2" md-colspan="1" md-colspan-sm="1">
+			<div role="button" ng-if="showDelete" class="btn-delete scaleIn scaleOut" layout="row" layout-align="center" ng-click="delete(list);">
+				<md-icon md-font-set="material-icons" class="white">close</md-icon>
+			</div>
 			<md-grid-tile-header>
+				<md-tooltip md-direction="bottom">Press me and hold to show delete</md-tooltip>
 				<h3>{{list.name}}</h3>
 			</md-grid-tile-header>
 
@@ -85,9 +89,12 @@
 
 				<md-list class="todo-active" ng-cloak>
 					<md-list-item class="add-task-input" ng-if="showAddTodoInput">
-						<form name="f_addTodo" novalidate class="full-width" ng-submit="addTodo(list);">
+						<form name="f_addTodo" novalidate autocomplete="off" class="full-width">
 							<md-input-container>
 								<input type="text" ng-model="todo.name" aria-label="Todo name" required>
+								<button type="submit" ng-click="addTodo(list);" layout="row" layout-align="center center" ng-disabled="f_addTodo.$invalid">
+									<md-icon md-font-set="material-icons">arrow_forward</md-icon>
+								</button>
 							</md-input-container>
 						</form>
 					</md-list-item>
@@ -124,9 +131,9 @@
 				</md-list>
 
 				<!-- shared list -->
-				<md-list ng-if="list.owner[0] != currentUser.id" class="m-t-0" ng-cloak>
+				<md-list ng-if="list.owner[0] != currentUser.id" class="m-t-0" layout="row" ng-cloak>
 					<!-- filter the shared lists' owners -->
-					<md-list-item ng-repeat="user in users | filter: {_id: list.owner[0]}:true">
+					<md-list-item ng-repeat="user in users | filter: ownerFilter(list.owner)">
 						<md-button class="md-fab md-mini md-icon-button shared-list-avatar" aria-label="List shared from {{user.firstName}} {{user.name}}">
 							<md-icon md-font-set="material-icons">person</md-icon>
 							<md-tooltip md-direction="top">{{user.firstName}} {{user.name}}</md-tooltip>

@@ -1,10 +1,19 @@
 @import "animate.css";
 @import "variables";
 @import "mixins";
+@import "material-icons";
 
 body {
   background-color: $lightgray;
   -webkit-font-smoothing: antialiased;
+  // Support for Safari and Chrome
+  text-rendering: optimizeLegibility;
+
+  // Support for Firefox
+  -moz-osx-font-smoothing: grayscale;
+
+  // Support for IE
+  font-feature-settings: 'liga';
 }
 
 * { outline: 0; }
@@ -28,6 +37,34 @@ body {
   &.ng-enter.ng-enter-active { @include transform(translate3d(0, 0, 0)); }
   &.ng-leave { @include transform(translate3d(0, 0, 0)); }
   &.ng-leave.ng-leave-active { @include transform(translate3d(-100%, 0, 0)); }
+}
+
+.scaleIn, .scaleOut {
+  &.ng-enter,
+  &.ng-leave {
+	@include transition(transform opacity, $transition-duration, cubic-bezier(0.550, 0.055, 0.675, 0.190));
+  }
+}
+.scaleIn {
+  &.ng-enter {
+	@include transparency(0, 0);
+	@include transform(scale(0));
+  }
+  &.ng-enter.ng-enter-active {
+	@include transparency(1, 100);
+	@include transform(scale(1));
+  }
+}
+
+.scaleOut {
+  &.ng-leave {
+	@include transparency(1, 100);
+	@include transform(scale(1));
+  }
+  &.ng-leave.ng-leave-active {
+	@include transparency(0, 0);
+	@include transform(scale(0));
+  }
 }
 
 // ----------- Rotations
@@ -78,6 +115,77 @@ md-sidenav, md-backdrop {
   position: fixed;
 }
 
+// ----------- login
+// -----------------------------
+#login-container {
+  .brand {
+	@include transform(scale(2));
+	@include transition(transform, $transition-duration, $ease-out-expo);
+	-webkit-transition-delay: 200ms;
+	-moz-transition-delay: 200ms;
+	transition-delay: 200ms;
+	md-icon { font-size: 250%; }
+
+	@media screen and (max-width: 600px) {
+	  @include transform(scale(1.5));
+	}
+  }
+
+  .form-container {
+	background-color: $white;
+	padding: 50px 20px 10px;
+	width: 80%;
+	min-width: 320px;
+	@include border-bottom-right-radius(15px);
+	@include border-top-left-radius(15px);
+	@include transition(width, $transition-duration, $ease-out-expo);
+
+	@media screen and (min-width: 414px) and (max-width: 1023px) {
+	  width: 60%;
+	}
+	@media screen and (min-width: 1024px) {
+	  width: 40%;
+	}
+  }
+}
+
+// -------- animations
+// -------------------------
+@mixin cycle($what) {
+  $c: ($amber, $green * .7, $red * .8, $purple, $blue * .7, $amber);
+  $i : 0;
+  @for $k from 1 through length($c) {
+	#{$i}% { #{$what}: nth($c, $k); }
+	$i: $i + 20;
+  }
+}
+
+.animate-background {
+  @include animation(background-cycle, 10s, infinite $ease-out-expo);
+}
+.animate-color {
+  @include animation(color-cycle, 10s, infinite $ease-out-expo);
+}
+@-webkit-keyframes background-cycle {
+  @include cycle(background-color);
+}
+@-moz-keyframes background-cycle {
+  @include cycle(background-color);
+}
+@keyframes background-cycle {
+  @include cycle(background-color);
+}
+
+@-webkit-keyframes color-cycle {
+  @include cycle(color);
+}
+@-moz-keyframes color-cycle {
+  @include cycle(color);
+}
+@keyframes color-cycle {
+  @include cycle(color);
+}
+
 // ----------- header
 // -----------------------------
 
@@ -111,7 +219,7 @@ md-sidenav, md-backdrop {
 		@include circle(40px);
 
 		md-icon {
-		  font-size: 140%;
+		  font-size: 200%;
 		  width: auto;
 		  height: auto;
 		}
@@ -209,6 +317,23 @@ md-grid-list {
 	  }
 	}
 
+	.btn-delete {
+	  background-color: rgba(0, 0, 0, .5);
+	  cursor: pointer;
+	  position: absolute;
+	  top: -10px;
+	  left: -8px;
+	  width: 20px;
+	  height: 20px;
+	  @include border-radius(50%);
+	  z-index: 200;
+	  @include transition(all, $transition-duration, $ease-out-expo);
+
+	  md-icon {
+		font-size: 100%;
+	  }
+	}
+
 	.btn-add-task {
 	  position: absolute;
 	  right: 0;
@@ -276,6 +401,13 @@ md-grid-list {
 		  .md-list-item-inner > md-icon:first-child {
 			margin-right: 10px;
 		  }
+		  &:first-child {
+			button {
+			  &:hover {
+				background: rgba(255, 255, 255, .2);
+			  }
+			}
+		  }
 		}
 	  }
 	  md-list-item {
@@ -302,8 +434,22 @@ md-grid-list {
 			input {
 			  //background: rgba(0, 0, 0, .1);
 			  border-bottom-color: rgba(0, 0, 0, .3);
-			  padding: 5px 0;
-			  &:focus { padding: 5px 0; }
+			  padding-right: 30px;
+			  overflow: hidden;
+			  //padding: 5px 30px 5px 0;
+			  //&:focus { padding: 5px 0; }
+			}
+			button {
+			  background: none;
+			  border: 2px solid rgba(0, 0, 0, .5);
+			  @include border-radius(50%);
+			  padding: 0;
+			  position: absolute;
+			  top: 5px;
+			  right: 0;
+			  width: 20px;
+			  height: 20px;
+			  md-icon { font-size: 110%; }
 			}
 		  }
 		}

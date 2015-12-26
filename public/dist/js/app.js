@@ -23,17 +23,26 @@ app.run(function($rootScope, $state, $timeout, $mdToast, UserService, jwtHelper)
 
 		// Check if the user is authenticated. When not, go back to login page, only if the current state
 		// is not already on the way to login page. We don't want to check if the views which don't have
+		// 'data' key
 		if (toState && toState.data && toState.data.requiresLogin) {
-			var token = UserService.getToken(),
-				isExpired = token ? jwtHelper.isTokenExpired(token) : true;
+			var token = UserService.getToken();
 
-			if (isExpired) {
+			// no token found
+			if (!token) {
 				if (toState.name !== 'login') {
 					evt.preventDefault();
 					$state.go('login', {}, {reload: true});
 				}
 			} else {
-				// authenticated, continue
+				// token exists, check if it's still valid
+				if (jwtHelper.isTokenExpired(token)) {
+					if (toState.name !== 'login') {
+						evt.preventDefault();
+						$state.go('login', {}, {reload: true});
+					}
+				} else {
+					// authenticated, continue routing
+				}
 			}
 		}
 	});
@@ -83,6 +92,8 @@ app.config(function($stateProvider, $urlRouterProvider, $httpProvider) {
 
 /**
  * Directive that adds a class <code>.sticky</code> while scrolling page down.
+ *
+ * @Usage <ANY class="jh-sticky-header"></ANY>
  */
 app.directive('jhStickyHeader', function () {
 	var link = function(scope, element) {
@@ -98,6 +109,38 @@ app.directive('jhStickyHeader', function () {
 
 	return {
 		restrict: 'C',
+		link: link
+	}
+});
+
+/**
+ * Directive that simulates long press in a time interval and adds a shaking effect
+ * to this directive's (element's) parent so that all its siblings get the same effect.
+ * A callback function can be passed to this directive.
+ *
+ * @Usage <ANY jh-long-press="callback()"></ANY>
+ */
+app.directive('jhLongPress', function ($timeout) {
+	var link = function (scope, elem, attrs) {
+		var timer;
+		elem.bind('mousedown touchstart', function() {
+			timer = $timeout(function() {
+				$timeout(function() {
+					// eval callback
+					scope.$eval(attrs.jhLongPress);
+				}, 500);
+				elem.parent().addClass('animated shake');
+			}, 800);
+		});
+
+		elem.bind('mouseup touchend', function() {
+			$timeout.cancel(timer);
+			elem.parent().removeClass('animated shake');
+		});
+	};
+
+	return {
+		restrict: 'A',
 		link: link
 	}
 });

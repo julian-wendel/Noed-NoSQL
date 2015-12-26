@@ -159,7 +159,7 @@ router.put('/', function (req, res, next) {
 										}
 									);
 								} else if (o.owner.indexOf(req.jwt.id) >= 0 && o.owner.length > 1 && !req.query.public) {
-									// the list original owner changes the list to private, so remove other owners for the shared list
+									// the list original owner changes the list to private, so remove other owners out of this shared list
 									var owner = o.owner.slice(o.owner.indexOf(req.jwt.id), 1);
 
 									db.collection('tasks').updateOne(
@@ -169,6 +169,29 @@ router.put('/', function (req, res, next) {
 												name: req.query.name,
 												public: req.query.public,
 												owner: owner
+											}
+										}, function (error, results) {
+											db.close();
+											if (error)
+												res.send(error.message);
+											else
+												res.send(results);
+										}
+									);
+								}
+								// Other owner(s) updates this shared list -> just remove the current logged in user
+								// from this owner's list, so this list still exists for its original owner and all other users
+								// that have added this list to their lists
+								else if (o.owner.indexOf(req.jwt.id) >= 0 && o.owner.length > 1 && req.query.public) {
+									db.collection('tasks').updateOne(
+										{"_id": req.query.id},
+										{
+											$set: {
+												name: req.query.name,
+												public: req.query.public
+											},
+											$pull: {
+												owner: req.jwt.id // pull out the current user from owner's list
 											}
 										}, function (error, results) {
 											db.close();
@@ -189,7 +212,10 @@ router.put('/', function (req, res, next) {
 											}
 										}, function (err, results) {
 											db.close();
-											res.send(results);
+											if (err)
+												res.send(err.message);
+											else
+												res.send(results);
 										}
 									);
 								}
@@ -277,7 +303,11 @@ router.delete('/', function (req, res, next) {
                 db.collection('tasks').deleteOne(
                     {"_id": req.query.id},
                     function (err, results) {
-                        res.sendStatus(200);
+						db.close();
+						if (err)
+							res.send(err.message);
+						else
+                        	res.sendStatus(200);
                     }
                 );
             }

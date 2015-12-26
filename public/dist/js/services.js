@@ -5,15 +5,14 @@
 (function () {
     'use strict';
 
-	// TODO add sign up
-    app.factory('AuthInterceptor', function($rootScope, $q) {
+	app.factory('AuthInterceptor', function($rootScope, $q) {
         return {
             request: function (config) {
 				var token = window.localStorage.getItem('token');
 
 				// set authentication header for every outgoing request
 				if(token)
-					config.headers['X-Auth-Token'] = token;
+					config.headers['x-auth-token'] = token;
 				return config || $q.when(config);
             },
 
@@ -29,7 +28,7 @@
 		var LOCAL_TOKEN_KEY = 'token';
 
 		var setCredentials = function(token) {
-			$http.defaults.headers.common['X-Auth-Token'] = token;
+			$http.defaults.headers.common['x-auth-token'] = token;
 		};
 
 		var getUserCredentials = function () {
@@ -46,7 +45,7 @@
 		};
 
 		var clearUserCredentials = function () {
-			$http.defaults.headers.common['X-Auth-Token'] = undefined;
+			$http.defaults.headers.common['x-auth-token'] = undefined;
 			window.localStorage.removeItem(LOCAL_TOKEN_KEY);
 		};
 
@@ -71,6 +70,23 @@
                 return $d.promise;
             },
 
+			register: function (data) {
+				var $d = $q.defer();
+				$http({
+					method: 'POST',
+					url: '/api/users',
+					data: data
+				}).then(function (res) {
+					if (res.status === 200) {
+						$d.resolve();
+					} else
+						$d.reject(res.status);
+				}, function (error) {
+					$d.reject(error);
+				});
+				return $d.promise;
+			},
+
 			all: function() {
 				var deferred = $q.defer();
 
@@ -87,8 +103,7 @@
 
 			getToken: function() {
 				// token contains current user's information. Needs to decode it using jwtHelper
-				var token = window.localStorage.getItem(LOCAL_TOKEN_KEY);
-				return token ? token : '';
+				return window.localStorage.getItem(LOCAL_TOKEN_KEY) || '';
 			},
 
 			logout: function() {

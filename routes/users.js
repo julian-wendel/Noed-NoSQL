@@ -96,10 +96,10 @@ function createUserFromReq(args) {
         user.name = args.req.body.name;
         user.firstName = args.req.body.firstName;
         user.password = args.req.body.password;
-        user.role = args.req.body.role;
+        user.role = 'USER'; // set the role default to 'user', consideration of security
 
         args.user = user;
-        if (!(user.username && user.name && user.firstName && user.password && user.role))
+        if (!(user.username && user.name && user.firstName && user.password)) // && user.role
             reject({status: 400, err: new Error('Bad Request')});
         else
             resolve(args);
@@ -187,7 +187,6 @@ router.get('/', function (req, res, next) {
             res.json(users);
         })
         .catch(function (err) {
-            console.log(err);
             res.sendStatus(err.status);
         });
 });
@@ -199,11 +198,10 @@ router.post('/', function (req, res, next) {
         .then(storeUser)
         //.then(addDefaultTasks)
         .then(function (args) {
-            res.json(args.default.user.ops[0]);
+            res.json(args.user);
         })
         .catch(function (err) {
-            console.log(err);
-            res.sendStatus(err.status);
+            res.sendStatus(400);
         });
 });
 

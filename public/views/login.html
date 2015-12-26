@@ -1,25 +1,53 @@
-<div layout="row" layout-fill layout-align="center center">
-    <md-whiteframe flex="50" flex-sm="90" layout-padding layout="column" class="md-whiteframe-6dp white-background">
-        <form name="loginForm" novalidate layout-padding>
-            <md-input-container class="md-block">
+<div id="login-container" layout="column" layout-align="center center" layout-fill>
+	<div class="brand" layout="row" layout-align="center">
+		<md-button class="md-fab md-icon-button animate-background">
+			<md-icon md-font-set="material-icons">list</md-icon>
+		</md-button>
+		<h4 class="animate-color">Noed List</h4>
+	</div>
+    <div layout-padding class="md-whiteframe-3dp form-container">
+        <form name="loginForm" novalidate>
+            <md-input-container class="md-block md-icon-float">
                 <label>Username</label>
+				<md-icon md-font-set="material-icons" class="gray">verified_user</md-icon>
                 <input required type="text" name="username" ng-model="user.username">
-                <div ng-if="loginForm.username.$touched" ng-messages="loginForm.username.$error">
+                <!--<div ng-if="loginForm.username.$touched" ng-messages="loginForm.username.$error">
                     <div ng-message="required">This is required.</div>
-                </div>
+                </div>-->
             </md-input-container>
 
-            <md-input-container class="md-block">
+            <md-input-container class="md-block md-icon-float">
                 <label>Password</label>
+				<md-icon md-font-set="material-icons" class="gray">lock_outline</md-icon>
                 <input required type="password" name="password" ng-model="user.password">
-                <div ng-if="loginForm.password.$touched" ng-messages="loginForm.password.$error">
+                <!--<div ng-if="loginForm.password.$touched" ng-messages="loginForm.password.$error">
                     <div ng-message="required">This is required.</div>
-                </div>
+                </div>-->
             </md-input-container>
+
+			<md-input-container ng-if="showRegister" class="md-block md-icon-float">
+				<label>First Name</label>
+				<md-icon md-font-set="material-icons" class="gray">person_outline</md-icon>
+				<input type="text" name="firstName" ng-model="user.firstName" required>
+			</md-input-container>
+
+			<md-input-container ng-if="showRegister" class="md-block md-icon-float">
+				<label>Surname</label>
+				<md-icon md-font-set="material-icons" class="gray">face</md-icon>
+				<input type="text" name="name" ng-model="user.name" required>
+			</md-input-container>
 
             <md-input-container>
-                <md-button ng-disabled="loginForm.$invalid" ng-click="login(user)" class="md-raised md-primary md-block">Login</md-button>
+				<div layout="row" layout-align="center">
+					<md-button ng-if="!showRegister" flex-gt-md="60" flex="50" ng-disabled="loginForm.$invalid" ng-click="login(user)" class="md-raised md-primary md-block">Login</md-button>
+					<md-button ng-if="showRegister" flex-gt-md="60" flex="50" ng-disabled="loginForm.$invalid" ng-click="register(user)" class="md-raised md-primary md-block">Register</md-button>
+					<md-button flex layout="row" layout-align="center" class="darkgray" md-no-ink ng-click="showRegister = !showRegister">
+						<md-icon md-font-set="material-icons" class="gray">keyboard_arrow_right</md-icon>
+						{{!showRegister ? 'Register' : 'Login'}}
+					</md-button>
+				</div>
+
             </md-input-container>
         </form>
-    </md-whiteframe>
+    </div>
 </div>
