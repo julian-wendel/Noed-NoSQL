@@ -6,7 +6,6 @@ var mongodb = require('mongodb').MongoClient;
 var uuid = require('uuid');
 
 var conStr = "mongodb://127.0.0.1:27017/nosql";
-var defaultTasksName = ['Daily', 'Private Backlog', 'Work Backlog', 'Shopping'];
 
 (function addDefaultUsers() {
     var defaultUsers = [
@@ -36,7 +35,6 @@ var defaultTasksName = ['Daily', 'Private Backlog', 'Work Backlog', 'Shopping'];
             .then(createUserFromReq)
             .then(hashPassword)
             .then(storeUser)
-            //.then(addDefaultTasks) // this will create the default lists every time on server startup
             .catch(function (err) {
                 console.log(err);
             });
@@ -134,29 +132,6 @@ function storeUser(args) {
     });
 }
 
-function addDefaultTasks(args) {
-    return new Promise(function (resolve, reject) {
-        var defaultTasks = [];
-
-        for (var i = 0; i < defaultTasksName.length; i++) {
-            defaultTasks.push({
-                _id: uuid.v1(),
-                name: defaultTasksName[i],
-                todos: [],
-                owner: [args.user._id],
-                color: 'lightblue'
-            });
-        }
-
-        args.db.collection('tasks').insertMany(defaultTasks, function (err, result) {
-            if (err)
-                reject({status: 400, err: err});
-            else
-                resolve(args);
-        });
-    });
-}
-
 function updateUser(args) {
     return new Promise(function (resolve, reject) {
         args.db.collection('users').updateOne({username: args.req.params.userId}, {$set: args.user}, function (err, result) {
@@ -196,7 +171,6 @@ router.post('/', function (req, res, next) {
         .then(createUserFromReq)
         .then(hashPassword)
         .then(storeUser)
-        //.then(addDefaultTasks)
         .then(function (args) {
             res.json(args.user);
         })

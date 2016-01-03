@@ -7,6 +7,12 @@
 	<md-divider ng-if="taskList.color == 'white' || taskList.color == 'lightyellow'"></md-divider>
 	<md-content layout-padding>
 		<md-list>
+			<md-list-item ng-click="showSharedListsDialog(); toggleMenu()">
+				<p>Shared lists</p>
+				<md-icon md-font-set="material-icons">share</md-icon>
+			</md-list-item>
+		</md-list>
+		<md-list>
 			<md-list-item ng-click="logout()">
 				<p>Logout</p>
 				<md-icon md-font-set="material-icons">exit_to_app</md-icon>

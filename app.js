@@ -10,17 +10,9 @@ var users = require('./routes/users');
 var token = require('./routes/token');
 var tasks = require('./routes/tasks');
 var todos = require('./routes/todo');
-
-var mongodb = require('mongodb').MongoClient;
-var bcrypt = require('bcryptjs');
-
 var restrict = require('./middleware/restrict');
 
 var app = express();
-
-// view engine setup
-app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'jade');
 
 // uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
