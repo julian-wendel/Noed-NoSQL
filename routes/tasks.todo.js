@@ -8,7 +8,7 @@ var conStr = "mongodb://127.0.0.1:27017/nosql";
 var uuid = require('uuid');
 
 /**
- * @api {get} /api/tasks/:taskId/todos
+ * @api {get} /api/tasks/:taskId/todos Retrieve All
  * @apiName TASKTODO_GetAllTodosOfList
  * @apiGroup Todos
  *
@@ -52,7 +52,7 @@ router.get('/:taskId/todos/', function (req, res, next) {
 /// get todo with specified id from database
 /// </summary>
 /**
- * @api {get} /api/tasks/:taskId/todos/:todoId
+ * @api {get} /api/tasks/:taskId/todos/:todoId Retrieve One
  * @apiName TASKTODO_GetOneTodo
  * @apiGroup Todos
  *
@@ -97,7 +97,7 @@ router.get('/:taskId/todos/:todoId', function (req, res, next) {
 /// insert new todo to database
 /// </summary>
 /**
- * @api {post} /api/tasks/:taskId/todos
+ * @api {post} /api/tasks/:taskId/todos Create
  * @apiName TASKTODO_InsertTodo
  * @apiGroup Todos
  *
@@ -151,7 +151,7 @@ router.post('/:taskId/todos', function (req, res, next) {
 /// update todo in database
 /// </summary>
 /**
- * @api {put} /api/tasks/:taskId/todos/:todoId
+ * @api {put} /api/tasks/:taskId/todos/:todoId Update
  * @apiName TASKTODO_UpdateTodo
  * @apiGroup Todos
  *
@@ -194,7 +194,7 @@ router.put('/:taskId/todos/:todoId', function (req, res, next) {
 /// delete todo from database
 /// </summary>
 /**
- * @api {delete} /api/tasks/:taskId/todos/:todoId
+ * @api {delete} /api/tasks/:taskId/todos/:todoId Delete
  * @apiName TASKTODO_DeleteOneTodo
  * @apiGroup Todos
  *
@@ -235,7 +235,7 @@ router.delete('/:taskId/todos/:todoId', function (req, res, next) {
 });
 
 /**
- * @api {delete} /api/tasks/:taskId/todos
+ * @api {delete} /api/tasks/:taskId/todos Delete One
  * @apiName TASKTODO_DeleteAllTodosInList
  * @apiGroup Todos
  *

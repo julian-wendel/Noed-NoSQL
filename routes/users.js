@@ -155,7 +155,7 @@ function deleteUser(args) {
 }
 
 /**
- * @api {get} /api/users
+ * @api {get} /api/users Retrieve All
  * @apiName GetAllUsers
  * @apiGroup Users
  *
@@ -180,7 +180,7 @@ router.get('/', function (req, res, next) {
 });
 
 /**
- * @api {post} /api/users
+ * @api {post} /api/users Create
  * @apiName Add User
  * @apiGroup Users
  *
@@ -227,7 +227,7 @@ router.post('/', function (req, res, next) {
 });
 
 /**
- * @api {get} /api/users/:id
+ * @api {get} /api/users/:id Retrieve One
  * @apiName GetAllUsers
  * @apiGroup Users
  *
@@ -263,7 +263,7 @@ router.get('/:userId', function (req, res, next) {
 });
 
 /**
- * @api {put} /api/users/:id
+ * @api {put} /api/users/:id Update
  * @apiName UpdateUser
  * @apiGroup Users
  *
@@ -312,7 +312,7 @@ router.put('/:userId', function (req, res, next) {
 });
 
 /**
- * @api {delete} /api/users/:id
+ * @api {delete} /api/users/:id Delete One
  * @apiName DeleteUser
  * @apiGroup Users
  *

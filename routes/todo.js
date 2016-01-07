@@ -9,7 +9,7 @@ var uuid = require('uuid');
 
 
 /**
- * @api {get} /api/todos/:id
+ * @api {get} /api/todos/:id Retrieve One
  * @apiName TODO_GetOneTodo
  * @apiGroup Todos
  *
@@ -49,7 +49,7 @@ router.get('/:id', function (req, res, next) {
 });
 
 /**
- * @api {put} /api/todos/:id
+ * @api {put} /api/todos/:id Update
  * @apiName TODO_UpdateOneTodo
  * @apiGroup Todos
  *
@@ -95,7 +95,7 @@ router.put('/:id', function (req, res, next) {
 });
 
 /**
- * @api {delete} /api/todos/:id
+ * @api {delete} /api/todos/:id Delete One
  * @apiName TODO_DeleteTodo
  * @apiGroup Todos
  *

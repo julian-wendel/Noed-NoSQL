@@ -62,7 +62,7 @@ function createToken(args){
 }
 
 /**
- * @api {post} /api/token
+ * @api {post} /api/token Generate
  * @apiName GetToken
  * @apiGroup Token
  *

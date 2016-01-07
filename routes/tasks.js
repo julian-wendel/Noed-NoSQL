@@ -52,7 +52,7 @@ var createDefaultTaskLists = function(req) {
 /// else return current users tasklists
 /// </description>
 /**
- * @api {get} /api/tasks?public=:public
+ * @api {get} /api/tasks?public=:public Retrieve All
  * @apiName GetAllTasks
  * @apiGroup Tasks
  *
@@ -119,7 +119,7 @@ router.get('/', function (req, res, next) {
 /// create new tasklist on database
 /// </summary>
 /**
- * @api {post} /api/tasks
+ * @api {post} /api/tasks Create
  * @apiName InsertTask
  * @apiGroup Tasks
  *
@@ -170,7 +170,7 @@ router.post('/', function (req, res, next) {
 /// update tasklist on database
 /// </summary>
 /**
- * @api {put} /api/tasks/:id
+ * @api {put} /api/tasks/:id Update
  * @apiName UpdateTask
  * @apiGroup Tasks
  *
@@ -358,7 +358,7 @@ router.put('/:id', function (req, res, next) {
 /// delete tasklist from database
 /// </summary>
 /**
- * @api {delete} /api/tasks/:id
+ * @api {delete} /api/tasks/:id Delete
  * @apiName DeleteTask
  * @apiGroup Tasks
  *
@@ -393,7 +393,7 @@ router.delete('/:id', function (req, res, next) {
 });
 
 /**
- * @api {get} /api/tasks/:id
+ * @api {get} /api/tasks/:id Retrieve One
  * @apiName GetOneTask
  * @apiGroup Tasks
  *
