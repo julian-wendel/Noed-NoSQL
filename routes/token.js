@@ -61,7 +61,28 @@ function createToken(args){
     });
 }
 
-/* GET users listing. */
+/**
+ * @api {post} /api/token
+ * @apiName GetToken
+ * @apiGroup Token
+ *
+ * @apiParam {String} username username of user
+ * @apiParam {String} password (new) password password of user
+ * @apiParamExample {json} Request-Example:
+ *     {
+ *       "username": "max",
+ *       "password": "mustermann"
+ *     }
+ *
+ * @apiSuccess {String} token token of user
+ * @apiSuccessExample {json} Response-Example:
+ *      {
+ *          "token": "xyzszzdausdaksd.dsdsd....."
+ *      }
+ *
+ * @apiError BadRequest username or password missing or invalid
+ * @apiError Unauthorized user not logged in or not permitted to access this api
+ */
 router.post('/', function(req, res) {
     var userReq = req.body;
     if(!(userReq.username && userReq.password)){

@@ -154,7 +154,20 @@ function deleteUser(args) {
     });
 }
 
-/* GET users listing. */
+/**
+ * @api {get} /api/users
+ * @apiName GetAllUsers
+ * @apiGroup Users
+ *
+ * @apiSuccess {Object[]} users list of all users
+ * @apiSuccess {String} users._id identifier of user object
+ * @apiSuccess {String} users.username username of user
+ * @apiSuccess {String} users.role role of use
+ * @apiSuccess {String} users.firstName given name of the user
+ * @apiSuccess {String} users.name name of user
+ *
+ * @apiError Unauthorized user not logged in or not permitted to access this api
+ */
 router.get('/', function (req, res, next) {
     connectToDB(req)
         .then(findAllUsers)
@@ -166,6 +179,40 @@ router.get('/', function (req, res, next) {
         });
 });
 
+/**
+ * @api {post} /api/users
+ * @apiName Add User
+ * @apiGroup Users
+ *
+ * @apiParam {String} username username of user
+ * @apiParam {String} role role of use
+ * @apiParam {String} firstName given name of the user
+ * @apiParam {String} name name of user
+ * @apiParamExample {json} Request-Example:
+ *  {
+ *      "username" : "maxmustermann",
+ *      "name" : "Musterfrau",
+ *      "firstName" : "Max",
+ *      "role" : "USER"
+ *  }
+ *
+ * @apiSuccess {String} _id identifier of user object
+ * @apiSuccess {String} username username of user
+ * @apiSuccess {String} role role of use
+ * @apiSuccess {String} firstName given name of the user
+ * @apiSuccess {String} name name of user
+ * @apiSuccessExample {json} Response-Example:
+ *  {
+ *      "_id" : "7729ab60-a5a3-11e5-a9ce-5b4aa543157d",
+ *      "username" : "maxmusterfrau",
+ *      "name" : "Musterfrau",
+ *      "firstName" : "Max",
+ *      "role" : "USER"
+ *  }
+ *
+ * @apiError BadRequest user with given identifier not found or invalid arguments
+ * @apiError Unauthorized user not logged in or not permitted to access this api
+ */
 router.post('/', function (req, res, next) {
     connectToDB(req)
         .then(createUserFromReq)
@@ -179,6 +226,30 @@ router.post('/', function (req, res, next) {
         });
 });
 
+/**
+ * @api {get} /api/users/:id
+ * @apiName GetAllUsers
+ * @apiGroup Users
+ *
+ * @apiParam {String} id identifier of user
+ *
+ * @apiSuccess {String} _id identifier of user object
+ * @apiSuccess {String} username username of user
+ * @apiSuccess {String} role role of use
+ * @apiSuccess {String} firstName given name of the user
+ * @apiSuccess {String} name name of user
+ * @apiSuccessExample {json} Response-Example:
+ *  {
+ *      "_id" : "7729ab60-a5a3-11e5-a9ce-5b4aa543157d",
+ *      "username" : "maxmustermann",
+ *      "name" : "Mustermann",
+ *      "firstName" : "Max",
+ *      "role" : "USER"
+ *  }
+ *
+ * @apiError BadRequest user with given identifier not found
+ * @apiError Unauthorized user not logged in or not permitted to access this api
+ */
 router.get('/:userId', function (req, res, next) {
     connectToDB(req)
         .then(findOneUser)
@@ -191,6 +262,41 @@ router.get('/:userId', function (req, res, next) {
         });
 });
 
+/**
+ * @api {put} /api/users/:id
+ * @apiName UpdateUser
+ * @apiGroup Users
+ *
+ * @apiParam {String} id identifier of user object
+ * @apiParam {String} username username of user
+ * @apiParam {String} role role of use
+ * @apiParam {String} firstName given name of the user
+ * @apiParam {String} name name of user
+ * @apiParamExample {json} Request-Example:
+ *  {
+ *      "username" : "maxmustermann",
+ *      "name" : "Musterfrau",
+ *      "firstName" : "Max",
+ *      "role" : "USER"
+ *  }
+ *
+ * @apiSuccess {String} _id identifier of user object
+ * @apiSuccess {String} username username of user
+ * @apiSuccess {String} role role of use
+ * @apiSuccess {String} firstName given name of the user
+ * @apiSuccess {String} name name of user
+ * @apiSuccessExample {json} Response-Example:
+ *  {
+ *      "_id" : "7729ab60-a5a3-11e5-a9ce-5b4aa543157d",
+ *      "username" : "maxmusterfrau",
+ *      "name" : "Musterfrau",
+ *      "firstName" : "Max",
+ *      "role" : "USER"
+ *  }
+ *
+ * @apiError BadRequest user with given identifier not found or invalid arguments
+ * @apiError Unauthorized user not logged in or not permitted to access this api
+ */
 router.put('/:userId', function (req, res, next) {
     connectToDB(req)
         .then(createUserFromReq)
@@ -205,6 +311,30 @@ router.put('/:userId', function (req, res, next) {
         });
 });
 
+/**
+ * @api {delete} /api/users/:id
+ * @apiName DeleteUser
+ * @apiGroup Users
+ *
+ * @apiParam {String} id identifier of user object which shall be deleted
+ *
+ * @apiSuccess {String} _id identifier of user object
+ * @apiSuccess {String} username username of user
+ * @apiSuccess {String} role role of use
+ * @apiSuccess {String} firstName given name of the user
+ * @apiSuccess {String} name name of user
+ * @apiSuccessExample {json} Response-Example:
+ *  {
+ *      "_id" : "7729ab60-a5a3-11e5-a9ce-5b4aa543157d",
+ *      "username" : "maxmusterfrau",
+ *      "name" : "Musterfrau",
+ *      "firstName" : "Max",
+ *      "role" : "USER"
+ *  }
+ *
+ * @apiError BadRequest user with given identifier not found or invalid arguments
+ * @apiError Unauthorized user not logged in or not permitted to access this api
+ */
 router.delete('/:userId', function (req, res, next) {
     connectToDB(req)
         .then(deleteUser)

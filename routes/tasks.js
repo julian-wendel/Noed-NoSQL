@@ -51,6 +51,25 @@ var createDefaultTaskLists = function(req) {
 /// if req.query.public == true return all public tasklists
 /// else return current users tasklists
 /// </description>
+/**
+ * @api {get} /api/tasks?public=:public
+ * @apiName GetAllTasks
+ * @apiGroup Tasks
+ *
+ * @apiParam {Boolean} [public] Query parameter for getting only private or public tasks
+ *
+ * @apiSuccess {Object[]} tasks list of all tasks belonging to the user
+ * @apiSuccess {String} tasks._id identifier of task list
+ * @apiSuccess {String} tasks.name name of task
+ * @apiSuccess {Integer[]} tasks.owner list of user ids which subscribed to this list
+ * @apiSuccess {String} tasks.color color of the task list chosen by user
+ * @apiSuccess {Boolean} tasks.public indicates if task is public(true) or private(false)
+ * @apiSuccess {Object[]} tasks.todos list of all todos in this list
+ * @apiSuccess {String} tasks.todos._id identifier of todo
+ * @apiSuccess {Boolean} tasks.todos.done indicates if todo is done or not
+ *
+ * @apiError Unauthorized user not logged in or not permitted to access this api
+ */
 router.get('/', function (req, res, next) {
     var query = {}; // customize the request query for private and public lists
 
@@ -59,8 +78,7 @@ router.get('/', function (req, res, next) {
 		query = {owner: req.jwt.id};
     } else if (req.query && req.query.public) {
 		query = {public: (req.query.public == 'true')};
-    } else
-        res.sendStatus(400);
+    }
 
     database.connect(conStr, function (err, db) {
         if (!err) {
@@ -100,6 +118,18 @@ router.get('/', function (req, res, next) {
 /// <summary>
 /// create new tasklist on database
 /// </summary>
+/**
+ * @api {post} /api/tasks?name=:name&color=:color&public=:public
+ * @apiName InsertTask
+ * @apiGroup Tasks
+ *
+ * @apiParam {String} name name of task
+ * @apiParam {String} color color of the task list chosen by user
+ * @apiParam {Boolean} public indicates if task is public(true) or private(false)
+ *
+ * @apiError InvalidParameters parameters are empty or nor allowed
+ * @apiError Unauthorized user not logged in or not permitted to access this api
+ */
 router.post('/', function (req, res, next) {
     if (req.query && req.query.name && req.query.public && req.query.color) {
         var task = req.query;
@@ -130,6 +160,18 @@ router.post('/', function (req, res, next) {
 /// <summary>
 /// update tasklist on database
 /// </summary>
+/**
+ * @api {post} /api/tasks?id=:id&name=:name&public=:public
+ * @apiName InsertTask
+ * @apiGroup Tasks
+ *
+ * @apiParam {String} id identifier of task
+ * @apiParam {String} name name of task list
+ * @apiParam {Boolean} public indicates if task is public(true) or private(false)
+ *
+ * @apiError InvalidParameters parameters are empty or nor allowed
+ * @apiError Unauthorized user not logged in or not permitted to access this api
+ */
 router.put('/', function (req, res, next) {
     if (req.query && req.query.id && req.query.name && req.query.public) {
         var task = req.query;
@@ -296,6 +338,16 @@ router.put('/', function (req, res, next) {
 /// <summary>
 /// delete tasklist from database
 /// </summary>
+/**
+ * @api {delete} /api/tasks?id=:id
+ * @apiName DeleteTask
+ * @apiGroup Tasks
+ *
+ * @apiParam {String} id identifier of task
+ *
+ * @apiError InvalidParameters parameters are empty or nor allowed
+ * @apiError Unauthorized user not logged in or not permitted to access this api
+ */
 router.delete('/', function (req, res, next) {
     if (req.query && req.query.id) {
         database.connect(conStr, function (err, db) {

@@ -19,9 +19,9 @@
 
 //Tasks
 {
-  _id:auto,
+  _id: uuid,
   name:String
-  owner:int, //userId,
+  owner:[int], //userId,
   color:String, // nullable
   public:bool
   todos:{
@@ -33,8 +33,8 @@
 
 //User
 {
-  _id:auto,
-  userName:String,
+  _id: uuid,
+  username:String,
   role: String,
   name:String,
   firstName:String,

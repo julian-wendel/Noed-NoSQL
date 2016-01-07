@@ -10,6 +10,20 @@ var uuid = require('uuid');
 /// <summary>
 /// get todo with specified id from database
 /// </summary>
+/**
+ * @api {get} /api/todos?id=:id
+ * @apiName GetOneTodo
+ * @apiGroup Todos
+ *
+ * @apiParam {String} id identifier of todo
+ *
+ * @apiSuccess {Object} todo todo with specified identifier
+ * @apiSuccess {String} todo._id identifier of todo
+ * @apiSuccess {String} todo.name name of todo
+ * @apiSuccess {Boolean} todo.done indicates if todo is done or not
+ *
+ * @apiError Unauthorized user not logged in or not permitted to access this api
+ */
 router.get('/', function (req, res, next) {
     if (req.query && req.query.id && req.query._todoId) {
         database.connect(conStr, function (err, db) {
@@ -40,6 +54,17 @@ router.get('/', function (req, res, next) {
 /// <summary>
 /// insert new todo to database
 /// </summary>
+/**
+ * @api {post} /api/todos?id=:id&name=:name
+ * @apiName InsertTodo
+ * @apiGroup Todos
+ *
+ * @apiParam {String} id identifier of task list to which todo shall be added
+ * @apiParam {String} name name of todo
+ *
+ * @apiError InvalidParameters parameter missing or invalid
+ * @apiError Unauthorized user not logged in or not permitted to access this api
+ */
 router.post('/', function (req, res, next) {
     if (req.query && req.query._id && req.query.name) {
         var todo = {
@@ -80,6 +105,19 @@ router.post('/', function (req, res, next) {
 /// <summary>
 /// update todo in database
 /// </summary>
+/**
+ * @api {put} /api/todos?_id=:id&_todoId=:todoId&name=:name&done=:done
+ * @apiName UpdateTodo
+ * @apiGroup Todos
+ *
+ * @apiParam {String} id identifier of task list which shall be updated
+ * @apiParam {String} todoId identifier of todo which shall be updated
+ * @apiParam {String} name (new) name of todo
+ * @apiParam {Boolean} done (new) value of done
+ *
+ * @apiError InvalidParameters parameter missing or invalid
+ * @apiError Unauthorized user not logged in or not permitted to access this api
+ */
 router.put('/', function (req, res, next) {
     if (req.query && req.query._id && req.query._todoId && req.query.name && req.query.done) {
         database.connect(conStr, function (err, db) {
@@ -109,6 +147,17 @@ router.put('/', function (req, res, next) {
 /// <summary>
 /// delete todo from database
 /// </summary>
+/**
+ * @api {delete} /api/todos?_id=:id&_todoId=:todoId
+ * @apiName UpdateTodo
+ * @apiGroup Todos
+ *
+ * @apiParam {String} id identifier of task list which shall be deleted
+ * @apiParam {String} todoId identifier of todo which shall be deleted
+ *
+ * @apiError InvalidParameters parameter missing or invalid
+ * @apiError Unauthorized user not logged in or not permitted to access this api
+ */
 router.delete('/', function (req, res, next) {
     //delete single item
     if (req.query && req.query._id && req.query._todoId) {
