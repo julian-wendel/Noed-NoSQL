@@ -194,7 +194,7 @@ router.put('/:taskId/todos/:todoId', function (req, res, next) {
 /// delete todo from database
 /// </summary>
 /**
- * @api {delete} /api/tasks/:taskId/todos/:todoId Delete
+ * @api {delete} /api/tasks/:taskId/todos/:todoId Delete One
  * @apiName TASKTODO_DeleteOneTodo
  * @apiGroup Todos
  *
@@ -235,7 +235,7 @@ router.delete('/:taskId/todos/:todoId', function (req, res, next) {
 });
 
 /**
- * @api {delete} /api/tasks/:taskId/todos Delete One
+ * @api {delete} /api/tasks/:taskId/todos Delete All
  * @apiName TASKTODO_DeleteAllTodosInList
  * @apiGroup Todos
  *
