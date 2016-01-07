@@ -119,24 +119,33 @@ router.get('/', function (req, res, next) {
 /// create new tasklist on database
 /// </summary>
 /**
- * @api {post} /api/tasks?name=:name&color=:color&public=:public
+ * @api {post} /api/tasks
  * @apiName InsertTask
  * @apiGroup Tasks
  *
  * @apiParam {String} name name of task
  * @apiParam {String} color color of the task list chosen by user
  * @apiParam {Boolean} public indicates if task is public(true) or private(false)
+ * @apiParamExample {json} Request-Example:
+ * 	{
+ * 		"name": "My List",
+ * 		"color": "lightblue",
+ * 		"public": false
+ * 	}
  *
  * @apiError InvalidParameters parameters are empty or nor allowed
  * @apiError Unauthorized user not logged in or not permitted to access this api
  */
 router.post('/', function (req, res, next) {
-    if (req.query && req.query.name && req.query.public && req.query.color) {
-        var task = req.query;
-        task.owner = [req.jwt.id];
-        task._id = uuid.v1();
-        task.todos = [];
-        task.public = (task.public == 'true');
+    if (req.body && req.body.name && typeof req.body.public == "boolean" && req.body.color) {
+		var task = {
+			"_id": uuid.v1(),
+			"name": req.body.name,
+			"public": req.body.public,
+			"owner": [req.jwt.id],
+			"color": req.body.color,
+			"todos": []
+		};
 
         database.connect(conStr, function (err, db) {
             if (!err) {
@@ -161,25 +170,35 @@ router.post('/', function (req, res, next) {
 /// update tasklist on database
 /// </summary>
 /**
- * @api {post} /api/tasks?id=:id&name=:name&public=:public
- * @apiName InsertTask
+ * @api {put} /api/tasks/:id
+ * @apiName UpdateTask
  * @apiGroup Tasks
  *
  * @apiParam {String} id identifier of task
+ *
  * @apiParam {String} name name of task list
  * @apiParam {Boolean} public indicates if task is public(true) or private(false)
+ * @apiParamExample {json} Request-Example:
+ * 	{
+ * 		"name": "My List",
+ * 		"color": "lightblue",
+ * 		"public": false
+ * 	}
  *
  * @apiError InvalidParameters parameters are empty or nor allowed
  * @apiError Unauthorized user not logged in or not permitted to access this api
  */
-router.put('/', function (req, res, next) {
-    if (req.query && req.query.id && req.query.name && req.query.public) {
-        var task = req.query;
-        task.public = (task.public == 'true');
+router.put('/:id', function (req, res, next) {
+    if (req.query && req.params.id && req.body.name && typeof req.body.public == "boolean") {
+		var task = {
+			"_id": req.params.id,
+			"public": req.body.public,
+			"name": req.body.name
+		};
 
         database.connect(conStr, function (err, db) {
             if (!err) {
-				var docs = db.collection('tasks').find({"_id": req.query.id});
+				var docs = db.collection('tasks').find({"_id": task._id});
 
 				if (docs != null) {
 					docs.toArray(function(error, result) {
@@ -190,7 +209,7 @@ router.put('/', function (req, res, next) {
 								// adding a public list to own list
 								if (o.owner.indexOf(req.jwt.id) < 0) {
 									db.collection('tasks').updateOne(
-										{"_id": req.query.id},
+										{"_id": task._id},
 										{
 											$push: {
 												"owner": req.jwt.id
@@ -200,16 +219,16 @@ router.put('/', function (req, res, next) {
 											res.send(results);
 										}
 									);
-								} else if (o.owner.indexOf(req.jwt.id) >= 0 && o.owner.length > 1 && !req.query.public) {
+								} else if (o.owner.indexOf(req.jwt.id) >= 0 && o.owner.length > 1 && !task.public) {
 									// the list original owner changes the list to private, so remove other owners out of this shared list
 									var owner = o.owner.slice(o.owner.indexOf(req.jwt.id), 1);
 
 									db.collection('tasks').updateOne(
-										{"_id": req.query.id},
+										{"_id": task._id},
 										{
 											$set: {
-												name: req.query.name,
-												public: req.query.public,
+												name: task.name,
+												public: task.public,
 												owner: owner
 											}
 										}, function (error, results) {
@@ -224,13 +243,13 @@ router.put('/', function (req, res, next) {
 								// Other owner(s) updates this shared list -> just remove the current logged in user
 								// from this owner's list, so this list still exists for its original owner and all other users
 								// that have added this list to their lists
-								else if (o.owner.indexOf(req.jwt.id) >= 0 && o.owner.length > 1 && req.query.public) {
+								else if (o.owner.indexOf(req.jwt.id) >= 0 && o.owner.length > 1 && task.public) {
 									db.collection('tasks').updateOne(
-										{"_id": req.query.id},
+										{"_id": task._id},
 										{
 											$set: {
-												name: req.query.name,
-												public: req.query.public
+												name: task.name,
+												public: task.public
 											},
 											$pull: {
 												owner: req.jwt.id // pull out the current user from owner's list
@@ -246,11 +265,11 @@ router.put('/', function (req, res, next) {
 								} else {
 									// updating own public list
 									db.collection('tasks').updateOne(
-										{"_id": req.query.id},
+										{"_id": task._id},
 										{
 											$set: {
-												"name": req.query.name,
-												"public": req.query.public
+												"name": task.name,
+												"public": task.public
 											}
 										}, function (err, results) {
 											db.close();
@@ -339,7 +358,7 @@ router.put('/', function (req, res, next) {
 /// delete tasklist from database
 /// </summary>
 /**
- * @api {delete} /api/tasks?id=:id
+ * @api {delete} /api/tasks/:id
  * @apiName DeleteTask
  * @apiGroup Tasks
  *
@@ -348,12 +367,12 @@ router.put('/', function (req, res, next) {
  * @apiError InvalidParameters parameters are empty or nor allowed
  * @apiError Unauthorized user not logged in or not permitted to access this api
  */
-router.delete('/', function (req, res, next) {
-    if (req.query && req.query.id) {
+router.delete('/:id', function (req, res, next) {
+    if (req.params.id) {
         database.connect(conStr, function (err, db) {
             if (!err) {
                 db.collection('tasks').deleteOne(
-                    {"_id": req.query.id},
+                    {"_id": req.params.id},
                     function (err, results) {
 						db.close();
 						if (err)
@@ -373,5 +392,39 @@ router.delete('/', function (req, res, next) {
         res.sendStatus(400);
 });
 
+/**
+ * @api {get} /api/tasks/:id
+ * @apiName GetOneTask
+ * @apiGroup Tasks
+ *
+ * @apiParam {String} id identifier of task
+ *
+ * @apiError InvalidParameters task not found
+ * @apiError Unauthorized user not logged in or not permitted to access this api
+ */
+router.get('/:id', function (req, res, next) {
+	if (req.params.id) {
+		database.connect(conStr, function (err, db) {
+			if (!err) {
+				db.collection('tasks').find(
+					{"_id": req.params.id}, {}).toArray(
+					function (err, results) {
+						db.close();
+						if (err && results.length > 0)
+							res.send(err);
+						else
+							res.json(results[0]);
+					}
+				);
+			}
+			else {
+				db.close();
+				res.sendStatus(500);
+			}
+		});
+	}
+	else
+		res.sendStatus(400);
+});
 
 module.exports = router;

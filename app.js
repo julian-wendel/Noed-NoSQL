@@ -9,7 +9,9 @@ var routes = require('./routes/index');
 var users = require('./routes/users');
 var token = require('./routes/token');
 var tasks = require('./routes/tasks');
+var task_todos = require('./routes/tasks.todo');
 var todos = require('./routes/todo');
+
 var restrict = require('./middleware/restrict');
 
 var app = express();
@@ -21,11 +23,11 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
-
 app.use('/', routes);
 
 app.use('/api/tasks', restrict.to(['USER', 'ADMIN']));
 app.use('/api/tasks', tasks);
+app.use('/api/tasks', task_todos);
 
 app.use('/api/todos', restrict.to(['USER', 'ADMIN']));
 app.use('/api/todos', todos);

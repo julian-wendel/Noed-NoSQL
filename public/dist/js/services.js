@@ -121,7 +121,7 @@
             $http({
                 method: 'POST',
                 url: apiPath,
-                params: task
+                data: task
             }).then(function (res) {
                 if (res.status === 200)
                     deferred.resolve(res.data);
@@ -172,8 +172,8 @@
 
             $http({
                 method: 'PUT',
-                url: apiPath,
-                params: {id: list._id, name: list.name, public: list.public}
+                url: apiPath + "/" + list._id,
+                data: list
             }).then(function (res) {
 				if (res.status === 200)
                     deferred.resolve();
@@ -191,8 +191,7 @@
 
             $http({
                 method: 'DELETE',
-                url: apiPath,
-                params: {id: list._id}
+                url: apiPath + "/" + list._id
             }).then(function (res) {
                 if (res.status === 200)
                     deferred.resolve();
@@ -214,15 +213,15 @@
     });
 
     app.factory('TodoService', function ($q, $http) {
-        var apiPath = '/api/todos';
+        var apiPath = '/api/tasks';
 
         var add = function (task, todo) {
             var deferred = $q.defer();
 
             $http({
                 method: 'POST',
-                url: apiPath,
-                params: {_id: task._id, name: todo.name}
+                url: apiPath + "/" + task._id + "/todos",
+                data: todo
             }).then(function (res) {
                 if (res.status === 200)
                     deferred.resolve(res.data);
@@ -238,8 +237,8 @@
             var deferred = $q.defer();
             $http({
                 method: 'PUT',
-                url: apiPath,
-                params: {_id: task._id, _todoId: todo._id, done: todo.done, name: todo.name}
+                url: apiPath + "/" + task._id + "/todos/" + todo._id,
+                data: todo
             }).then(function (res) {
                 if (res.status === 200)
                     deferred.resolve();
@@ -251,12 +250,11 @@
             return deferred.promise;
         };
 
-		var remove = function (list, todo) {
+		var remove = function (task, todo) {
 			var deferred = $q.defer();
 			$http({
 				method: 'DELETE',
-				url: apiPath,
-				params: {_id: list._id, _todoId: todo._id}
+				url: apiPath + "/" + task._id + "/todos/" + todo._id
 			}).then(function (res) {
 				if (res.status === 200)
 					deferred.resolve();
