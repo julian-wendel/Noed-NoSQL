@@ -4,8 +4,11 @@
 var express = require('express');
 var router = express.Router();
 var database = require('mongodb').MongoClient;
-var conStr = "mongodb://127.0.0.1:27017/nosql";
 var uuid = require('uuid');
+var config = require('../settings');
+
+var conStr = "mongodb://" + config.mongodb.host + ":" + config.mongodb.port + "/" + config.mongodb.database;
+var tasksName = config.mongodb.collections.tasks;
 
 /**
  * @api {get} /api/tasks/:taskId/todos Retrieve All
@@ -25,7 +28,7 @@ router.get('/:taskId/todos/', function (req, res, next) {
     if (req.params.taskId) {
         database.connect(conStr, function (err, db) {
             if (!err) {
-                db.collection('tasks').find({
+                db.collection(tasksName).find({
                     "_id": req.params.taskId,
                     "owner": req.jwt.id
                 }, {}).toArray(function (err, result) {
@@ -70,7 +73,7 @@ router.get('/:taskId/todos/:todoId', function (req, res, next) {
     if (req.params.taskId && req.params.todoId) {
         database.connect(conStr, function (err, db) {
             if (!err) {
-                db.collection('tasks').find({
+                db.collection(tasksName).find({
                     "_id": req.params.taskId,
                     "owner": req.jwt.id
                 }, {todos: {$elemMatch: {"_id": req.params.todoId}}}).toArray(function (err, result) {
@@ -119,7 +122,7 @@ router.post('/:taskId/todos', function (req, res, next) {
         };
         database.connect(conStr, function (err, db) {
 			if (!err) {
-				db.collection('tasks').updateOne(
+				db.collection(tasksName).updateOne(
 					{
 						"_id": req.params.taskId,
 						"owner": req.jwt.id
@@ -168,7 +171,7 @@ router.put('/:taskId/todos/:todoId', function (req, res, next) {
     if (req.params.taskId && req.params.todoId && req.body.name && typeof req.body.done == "boolean") {
         database.connect(conStr, function (err, db) {
             if (!err) {
-                db.collection('tasks').updateOne(
+                db.collection(tasksName).updateOne(
                     {"_id": req.params.taskId, "owner": req.jwt.id, "todos._id": req.params.todoId},
                     {
                         $set: {
@@ -209,7 +212,7 @@ router.delete('/:taskId/todos/:todoId', function (req, res, next) {
     if (req.params.taskId && req.params.todoId) {
         database.connect(conStr, function (err, db) {
             if (!err) {
-                db.collection('tasks').updateOne(
+                db.collection(tasksName).updateOne(
                     {
                         "_id": req.params.taskId,
                         "owner": req.jwt.id
@@ -249,7 +252,7 @@ router.delete('/:taskId/todos', function (req, res, next) {
     if (req.params.taskId) {
         database.connect(conStr, function (err, db) {
             if (!err) {
-                db.collection('tasks').updateOne(
+                db.collection(tasksName).updateOne(
                     {"_id": req.params.taskId},
                     {
                         $pullAll: {'todos': []}

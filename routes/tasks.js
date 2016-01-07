@@ -4,8 +4,11 @@
 var express = require('express');
 var router = express.Router();
 var database = require('mongodb').MongoClient;
-var conStr = "mongodb://127.0.0.1:27017/nosql";
 var uuid = require('uuid');
+var config = require('../settings');
+
+var conStr = "mongodb://" + config.mongodb.host + ":" + config.mongodb.port + "/" + config.mongodb.database;
+var tasksName = config.mongodb.collections.tasks;
 
 var defaultTaskLists = [
 	{
@@ -82,7 +85,7 @@ router.get('/', function (req, res, next) {
 
     database.connect(conStr, function (err, db) {
         if (!err) {
-            db.collection("tasks").find(query).toArray(function (err, result) {
+            db.collection(tasksName).find(query).toArray(function (err, result) {
                 if (err) {
                     console.log(err);
                     db.close();

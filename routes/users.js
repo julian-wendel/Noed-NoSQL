@@ -4,8 +4,10 @@ var bcrypt = require('bcryptjs');
 var Promise = require('bluebird');
 var mongodb = require('mongodb').MongoClient;
 var uuid = require('uuid');
+var config = require('../settings');
 
-var conStr = "mongodb://127.0.0.1:27017/nosql";
+var conStr = "mongodb://" + config.mongodb.host + ":" + config.mongodb.port + "/" + config.mongodb.database;
+var usersName = config.mongodb.collections.users;
 
 (function addDefaultUsers() {
     var defaultUsers = [
@@ -54,7 +56,7 @@ function connectToDB(req) {
 
 function findAllUsers(args) {
     return new Promise(function (resolve, reject) {
-        args.db.collection('users').find({}, {
+        args.db.collection(usersName).find({}, {
             _id: 1,
             role: 1,
             username: 1,
@@ -71,7 +73,7 @@ function findAllUsers(args) {
 
 function findOneUser(args) {
     return new Promise(function (resolve, reject) {
-        args.db.collection('users').find({username: args.req.params.userId}, {
+        args.db.collection(usersName).find({username: args.req.params.userId}, {
             _id: 1,
             role: 1,
             username: 1,
@@ -122,7 +124,7 @@ function hashPassword(args) {
 
 function storeUser(args) {
     return new Promise(function (resolve, reject) {
-        args.db.collection('users').findOneAndUpdate({username: args.user.username}, {$setOnInsert: args.user}, {upsert: true}, function (err, result) {
+        args.db.collection(usersName).findOneAndUpdate({username: args.user.username}, {$setOnInsert: args.user}, {upsert: true}, function (err, result) {
             //console.log(result);
             if (err)
                 reject({status: 400, err: err});
@@ -134,7 +136,7 @@ function storeUser(args) {
 
 function updateUser(args) {
     return new Promise(function (resolve, reject) {
-        args.db.collection('users').updateOne({username: args.req.params.userId}, {$set: args.user}, function (err, result) {
+        args.db.collection(usersName).updateOne({username: args.req.params.userId}, {$set: args.user}, function (err, result) {
             if (err || result.modifiedCount == 0)
                 reject({status: 400, err: err});
             else
@@ -145,7 +147,7 @@ function updateUser(args) {
 
 function deleteUser(args) {
     return new Promise(function (resolve, reject) {
-        args.db.collection('users').deleteOne({username: args.req.params.userId}, {}, function (err, result) {
+        args.db.collection(usersName).deleteOne({username: args.req.params.userId}, {}, function (err, result) {
             if (err || result.deletedCount == 0)
                 reject({status: 400, err: err});
             else

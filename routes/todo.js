@@ -4,9 +4,11 @@
 var express = require('express');
 var router = express.Router();
 var database = require('mongodb').MongoClient;
-var conStr = "mongodb://127.0.0.1:27017/nosql";
-var uuid = require('uuid');
 
+var config = require('../settings');
+
+var conStr = "mongodb://" + config.mongodb.host + ":" + config.mongodb.port + "/" + config.mongodb.database;
+var tasksName = config.mongodb.collections.tasks;
 
 /**
  * @api {get} /api/todos/:id Retrieve One
@@ -25,7 +27,7 @@ router.get('/:id', function (req, res, next) {
     if (req.params.id) {
         database.connect(conStr, function (err, db) {
             if (!err) {
-                db.collection('tasks').find({
+                db.collection(tasksName).find({
                     "todos._id": req.params.id,
                     "owner": req.jwt.id
                 }, {}).toArray(function (err, result) {
@@ -65,7 +67,7 @@ router.put('/:id', function (req, res, next) {
     if (req.params.id && req.body.name && typeof req.body.done == 'boolean') {
         database.connect(conStr, function (err, db) {
             if (!err) {
-                db.collection('tasks').updateOne({
+                db.collection(tasksName).updateOne({
                     "todos._id": req.params.id,
                     "owner": req.jwt.id
                 },
@@ -107,7 +109,7 @@ router.delete('/:id', function (req, res, next) {
     if (req.params.id) {
         database.connect(conStr, function (err, db) {
             if (!err) {
-                db.collection('tasks').find({
+                db.collection(tasksName).find({
                     "todos._id": req.params.id,
                     "owner": req.jwt.id
                 }, {

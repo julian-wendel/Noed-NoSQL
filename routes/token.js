@@ -8,9 +8,11 @@ var bcrypt = require('bcryptjs');
 var Promise = require('bluebird');
 var mongodb = require('mongodb').MongoClient;
 var router = express.Router();
+var config = require('../settings');
 
-var conStr = "mongodb://127.0.0.1:27017/nosql";
-var privateKey = "Pass1234_";
+var conStr = "mongodb://" + config.mongodb.host + ":" + config.mongodb.port + "/" + config.mongodb.database;
+var usersName = config.mongodb.collections.users;
+var tokenKey = config.security.tokenKey;
 
 function connectToDB(req){
     return new Promise(function(resolve, reject) {
@@ -25,7 +27,7 @@ function connectToDB(req){
 
 function findUser(args){
     return new Promise(function(resolve, reject){
-        args.db.collection('users').find({username: args.req.body.username}).toArray(function getUser(err, users) {
+        args.db.collection(usersName).find({username: args.req.body.username}).toArray(function getUser(err, users) {
             if (err)
                 reject({status: 400, err: err});
             else
@@ -38,7 +40,6 @@ function findUser(args){
 function comparePassword(args){
     return new Promise(function(resolve, reject) {
         bcrypt.compare(args.req.body.password, args.users[0].password, function comparePassword(err, result) {
-            console.log('Passwords equal?' + result);
             if (err || !result)
                 reject({status: 400, err: err});
             else
@@ -51,11 +52,10 @@ function createToken(args){
     return new Promise(function (resolve, reject) {
         jwt.sign({
             id: args.user._id,
-            //username: args.user.username,
 			name: args.user.name,
 			firstName: args.user.firstName,
             role: args.user.role
-        }, privateKey, {expiresIn: "1h"}, function createToken(token) {
+        }, tokenKey, {expiresIn: "1h"}, function createToken(token) {
             resolve({token: token});
         });
     });
@@ -98,8 +98,8 @@ router.post('/', function(req, res) {
             res.json(data);
         })
         .catch(function(error){
-            console.log(error.err);
-            res.sendStatus(error.status);
+            console.log(error);
+            res.sendStatus(error);
         });
 });
 
