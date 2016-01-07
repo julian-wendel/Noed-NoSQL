@@ -41,7 +41,7 @@ $ node bin/www
 
 #### API Documentation
 
-When the project is running the api documentation can be accessed via /api. 
+When the project is running the api documentation can be accessed via /apidoc.
 
 Example: http://localhost:3000/apidoc
 
